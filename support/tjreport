@@ -8,9 +8,12 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.17 $
+# This is $Revision: 1.18 $
 #
 # $Log: tjreport,v $
+# Revision 1.18  2005/03/29 14:30:15  ajosey
+# allow for TEST_VERS and TEST_ARCH not to be set
+#
 # Revision 1.17  2005/03/29 14:17:26  ajosey
 # revamp tjreport to get waiver files over the network if no other option specified, bug 650
 #
@@ -132,6 +135,8 @@ sub GatherStats($) {
     $stats->{TOTAL_TESTS_PASSED}        = 0;
     $stats->{TOTAL_TESTS_FAILED}        = 0;
     $stats->{TOTAL_TESTS_EXPECTED}      = 0;
+    $stats->{TEST_VERS} 		= "unset";
+    $stats->{TEST_ARCH} 		= "unset";
 
     # Analyse file
     open( JFILE, $journalFile ) || die "Could not open file: $journalFile\n";
@@ -539,11 +544,16 @@ sub LoadNetWaiverFile($) {
     my $ret;
     my ($waived) = {};
 
-    print "Loading networked waivers information -- file: $filename\n";
+#  if a test version is not determined
+    if ( $filename =~ /unset/ ) {
+       return $waived;
+    }
+
+    print "Loading networked waivers information -- file: http://www.opengroup.org/infosrv/lsb/waivers/$filename\n";
     $ret = system "wget -nv --output-document=waivers.txt http://www.opengroup.org/infosrv/lsb/waivers/$filename 2>&1 >/dev/null" ;
     if ( $ret != 0 )
     {
-    	print "Warning, wget failed no network waivers retrieved\n";
+    	print "Warning, wget was unable to locate network waivers to retrieve..\n";
         return;
     }
 
