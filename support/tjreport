@@ -8,9 +8,13 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.11 $
+# This is $Revision: 1.12 $
 #
 # $Log: tjreport,v $
+# Revision 1.12  2004/03/28 15:59:17  mats
+# Collected tweaks: improve processing loop, accept build and clean journals
+# as well (110, 300 lines), quit if journal is corrupt (e.g. hand-edited)
+#
 # Revision 1.11  2003/10/31 02:34:37  cyeoh
 # Only print test system information if it exists
 # Adds verbose flag which causes error information to be printed
@@ -128,15 +132,20 @@ sub GatherStats($)
       @line = split(/ /, $1);
       $stats->{TEST_DATE} = $line[2];
       $stats->{TEST_TIME} = $line[1];
+      next;
     }
     elsif ($line=~ /^30\|.*VSX_SYS=(.*)$/)
     {
       $stats->{TEST_SYSTEM} = $1;
+      next;
     }
 
     # Look for test results
     @line = split(/ /, $line);
-    if ($line[0] =~ /^10/) { $testName = $line[1]; }
+    if ($line[0] =~ /^10/ || $line[0] =~ /^110/ || $line[0] =~ /^300/)
+    { 
+      $testName = $line[1]; 
+    } 
     elsif ($line[0] =~ /^200/) 
     { 
       $testNum = $line[1]; 
@@ -148,6 +157,9 @@ sub GatherStats($)
       $testState = exists($StateMap{$line[2]}) ? $StateMap{$line[2]} 
         : "UNKNOWN";
 
+      if(exists($stats->{TESTS}{$testName}{$testNum}{STATE})) {
+          die "Error: dup entry at ${testName} ${testNum}, journal invalid\n"
+      }
       $stats->{STATE_SUMMARY}{$testState}++;
 
       if (exists($stats->{TESTS}{$testName}{$testNum}))
