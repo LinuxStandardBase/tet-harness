@@ -8,9 +8,13 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.9 $
+# This is $Revision: 1.10 $
 #
 # $Log: tjreport,v $
+# Revision 1.10  2003/07/17 07:17:49  cyeoh
+# change error about test inconsistency to warning as lsblibchk
+# is creating duplicates at the moment
+#
 # Revision 1.9  2002/01/16 05:14:00  cyeoh
 # clean up help information
 # remove dependency on DBI when not used
@@ -139,7 +143,14 @@ sub GatherStats($)
         : "UNKNOWN";
 
       $stats->{STATE_SUMMARY}{$testState}++;
+
+      if (exists($stats->{TESTS}{$testName}{$testNum}))
+      {
+#        print "Dup: $testName $testNum\n";
+      }
       $stats->{TESTS}{$testName}{$testNum}{STATE} = $testState;
+
+
       
       if ($PFMap{$testState} eq "PASS")
       {
@@ -281,8 +292,8 @@ sub PrintSummary($$$)
 
   $numTests = $stats->{TOTAL_TESTS_PASSED} + $stats->{TOTAL_TESTS_FAILED};
 
-  die "Inconsistency in test count. This is probably due to a bug in this"
-      . " program.\n"
+  print "Warning: Inconsistency in test count. This is probably due to a bug in this"
+      . " program ($numTests, $secondCount).\n"
       unless $numTests==$secondCount;
 
   print "\n\n";
