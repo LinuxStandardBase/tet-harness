@@ -8,9 +8,13 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.8 $
+# This is $Revision: 1.9 $
 #
 # $Log: tjreport,v $
+# Revision 1.9  2002/01/16 05:14:00  cyeoh
+# clean up help information
+# remove dependency on DBI when not used
+#
 # Revision 1.8  2001/12/04 07:39:41  cyeoh
 # Add support for waiver files
 #
@@ -456,18 +460,19 @@ getopts('dhu:p:b:e:r:o:w:', \%options);
 
 if (exists($options{'h'}) || ($#ARGV!=0 && $#ARGV!=1))
 {
-  print STDERR <<"EOM"
+  print STDOUT <<"EOM"
 Usage: $0 [-h] [-d] [-u username] [-p password] [-b db_name] 
           [-e vendor_name] [-r version] journal [journal2]
 
     -h               Display Help
-    -d               Detailed Summary
-    -u username      Username for db
-    -p password      Password for db
-    -b db_name       Database name
-    -o host          Host for databse (defaults to localhost)
-    -e vendor_name   Vendor name of distribution for data read
-    -r version       Version name for distribution for data read
+    -d               Display a detailed summary of test results. The
+                     test result is shown even if the test passed
+    -u username      Username for connection to Mysql db
+    -p password      Password for connection to Mysql db
+    -b db_name       Name of Mysql Database name
+    -o host          Host for Mysql databse (defaults to localhost)
+    -e vendor_name   Vendor name of distribution
+    -r version       Version name for distribution
     -w waiver file   Take into account waived failures for test suite
 
     When one journal file is supplied a summary of the tests
@@ -482,7 +487,7 @@ EOM
 my($dbh);
 if (exists($options{'b'}))
 {
-  use DBI;
+  require DBI;
   if (!exists($options{'e'}) || !exists($options{'r'}))
   {
     die "Must specify vendor and version of distribution\n";
