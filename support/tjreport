@@ -8,9 +8,13 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.3 $
+# This is $Revision: 1.4 $
 #
 # $Log: tjreport,v $
+# Revision 1.4  2001/08/14 04:59:55  cyeoh
+# Rework for change in db format.
+# Now keeps track of how many results available for each testcase
+#
 # Revision 1.3  2001/08/14 02:18:07  cyeoh
 # Adds ability to add error information for failed tests into database
 #
@@ -274,8 +278,8 @@ sub LoadIntoDatabase($$$$)
   print "Adding information to DB\n";
 
   $sth = $dbh->prepare(
-    "SELECT distroId from distributions where vendorname='$vendorName'"
-                       . " and versionname='$versionName'") 
+    "SELECT DistroId from distributions where VendorName='$vendorName'"
+                       . " and VersionName='$versionName'") 
       || die $dbh->errstr;
   $sth->execute() || die $dbh->errstr;
   if ($sth->rows==0)
@@ -283,31 +287,52 @@ sub LoadIntoDatabase($$$$)
     # Add distribution information to database
     print "Adding distribution information to database\n";
     $sth = $dbh->prepare(
-      "INSERT INTO distributions (vendorname, versionname)"
+      "INSERT INTO distributions (VendorName, VersionName)"
       . " Values ('$vendorName', '$versionName')")
         || die $dbh->errstr;
     $sth->execute() || die $dbh->errstr;
     $sth = $dbh->prepare(
-      "SELECT distroId from distributions where vendorname='$vendorName'"
-         . " and versionname='$versionName'") 
+      "SELECT DistroId from distributions where VendorName='$vendorName'"
+         . " and VersionName='$versionName'") 
         || die $dbh->errstr;
-  $sth->execute() || die $dbh->errstr;
+    $sth->execute() || die $dbh->errstr;
   }
+  die "found " . $sth->rows . " occurences of distro name\n" 
+      unless $sth->rows==1;
   # Get distro id
-  $distroId = $sth->fetchrow_hashref->{distroId};
+  $distroId = $sth->fetchrow_hashref->{DistroId};
   print "Distribution id: $distroId\n";
 
   $sth = $dbh->prepare(
-    "INSERT INTO results (Testcases, Distro, State, Description)"
+    "INSERT INTO results (Testcase, Distro, State, Description)"
   . "Values (?, ?, ?, ?)") 
       || die $dbh->errstr;
 
   my($errorMessage);
-
+  my($testcaseId);
+  my($id_sth);
   foreach $testName (sort keys %{$stats->{TESTS}})
   {
     foreach $testNum (sort {$a <=> $b} keys %{$stats->{TESTS}{$testName}})
     {
+      # Get testcase id
+      $id_sth = $dbh->prepare("SELECT TestcaseId from testcases"
+                              . " where Name='$testName-$testNum'")
+      || die $dbh->errstr;
+      $id_sth->execute();
+      if ($id_sth->rows==0)
+      {
+        $id_sth = $dbh->prepare("INSERT INTO testcases (Name)"
+                                . " Values ('$testName-$testNum')")
+            || die $dbh->errstr;
+        $id_sth->execute() || die $dbh->errstr;
+        $id_sth = $dbh->prepare("SELECT TestcaseId from testcases"
+                                . " where Name='$testName-$testNum'")
+            || die $dbh->errstr;
+        $id_sth->execute() || die $dbh->errstr;
+      }
+      $testcaseId = $id_sth->fetchrow_hashref->{TestcaseId};
+
       if (exists($stats->{TESTS}{$testName}{$testNum}{INFO}))
       {
         $errorMessage = $stats->{TESTS}{$testName}{$testNum}{INFO};
@@ -316,12 +341,20 @@ sub LoadIntoDatabase($$$$)
       {
         $errorMessage = "";
       }
-      $sth->execute("$testName-$testNum", $distroId,
+      $sth->execute($testcaseId, $distroId,
                     $stats->{TESTS}{$testName}{$testNum}{STATE}, 
                     $errorMessage)
           || die $dbh->errstr;
     }
   }
+
+  # Update test case count
+  $sth = $dbh->prepare("REPLACE INTO testcase_count (Testcase, NumberEntries) "
+                  ."SELECT Testcase, Count(*) FROM results GROUP BY Testcase")
+      || $sth->errstr;
+  $sth->execute() || die $sth->errstr;
+
+  # Commit changes
   $dbh->commit || die $dbh->errstr;
 
 }
