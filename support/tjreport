@@ -8,9 +8,12 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.7 $
+# This is $Revision: 1.8 $
 #
 # $Log: tjreport,v $
+# Revision 1.8  2001/12/04 07:39:41  cyeoh
+# Add support for waiver files
+#
 # Revision 1.7  2001/11/05 07:31:19  cyeoh
 # Fixes bug that caused the missing of some testcases
 # Adds cross check of testcase count
@@ -238,10 +241,11 @@ sub PrintDiffSummary($$)
 
 #----------------------------------------------------------------------
 #
-sub PrintSummary($$)
+sub PrintSummary($$$)
 {
   my($stats) = shift;
   my($isDetailed) = shift;
+  my($waivers) = shift;
 
   my($testState);
 
@@ -249,6 +253,8 @@ sub PrintSummary($$)
   my($testNum);
   my($numTests);
   my($secondCount) = 0;
+  my($waived) = 0;
+
   foreach $testName (sort keys %{$stats->{TESTS}})
   {
     foreach $testNum (sort {$a <=> $b} keys %{$stats->{TESTS}{$testName}})
@@ -258,23 +264,32 @@ sub PrintSummary($$)
       if ( ($PFMap{$stats->{TESTS}{$testName}{$testNum}{STATE}} eq "FAIL")
 	   || $isDetailed )
       {
-	print "$testName $testNum $stats->{TESTS}{$testName}{$testNum}{STATE}\n";
+	print "$testName $testNum $stats->{TESTS}{$testName}{$testNum}{STATE}";
+        if (defined($waivers) && $waivers->{"$testName-$testNum"})
+        {
+          print " (WAIVED)";
+          $waived++;
+        }
+        print "\n";
       }
     }
   }
 
   $numTests = $stats->{TOTAL_TESTS_PASSED} + $stats->{TOTAL_TESTS_FAILED};
 
+  die "Inconsistency in test count. This is probably due to a bug in this"
+      . " program.\n"
+      unless $numTests==$secondCount;
+
   print "\n\n";
-  print "total_tests: $numTests\n";
-  print "total_tests (check): $secondCount\n";
   print "Test system: $stats->{TEST_SYSTEM}\n";
   print "Test was run: $stats->{TEST_DATE} $stats->{TEST_TIME} \n";
 
   print "Total Tests Passed: $stats->{TOTAL_TESTS_PASSED}\n";
-  print "Total Tests Failed: $stats->{TOTAL_TESTS_FAILED}\n";
+  print "Total Tests Failed (including waived): $stats->{TOTAL_TESTS_FAILED}\n";
+  print "Total Tests Failed (excluding waived): :" . ($stats->{TOTAL_TESTS_FAILED}-$waived) . "\n";
 
-
+  print "\nTest Result Breakdown:\n";
   foreach $testState (keys %{$stats->{STATE_SUMMARY}})
   {
     print "$testState: $stats->{STATE_SUMMARY}{$testState}\n";
@@ -408,13 +423,36 @@ sub SetTestSuiteForTestcases($)
   $dbh->commit() || die $dbh->errstr;
 }
 
+#----------------------------------------------------------------------
+# Load waiver file 
+# Returns hash of waived tests
+sub LoadWaiverFile($)
+{
+  my($waiverFilename) = shift;
+  local(*WAIVERFILE);
+  my($waived) = {};
+
+  die "Could not open waiver file $waiverFilename" 
+      unless open(WAIVERFILE, $waiverFilename);
+  my($line);
+  while ( defined($line = <WAIVERFILE>) )
+  {
+    chomp($line);
+    # '#' is the comment character for the waiver file
+    if ($line!~/^\#/)
+    {
+      $waived->{$line} = 1;
+    }
+  }
+  return $waived;
+}
 
 #----------------------------------------------------------------------
 # Main bit
 
 my(%options);
 
-getopts('dhu:p:b:e:r:o:', \%options);
+getopts('dhu:p:b:e:r:o:w:', \%options);
 
 if (exists($options{'h'}) || ($#ARGV!=0 && $#ARGV!=1))
 {
@@ -430,6 +468,8 @@ Usage: $0 [-h] [-d] [-u username] [-p password] [-b db_name]
     -o host          Host for databse (defaults to localhost)
     -e vendor_name   Vendor name of distribution for data read
     -r version       Version name for distribution for data read
+    -w waiver file   Take into account waived failures for test suite
+
     When one journal file is supplied a summary of the tests
     is output. When two journal files are supplied the difference
     between the two is shown.
@@ -486,7 +526,12 @@ else
   }
   else
   {
-    PrintSummary($stats, exists($options{'d'}));
+    my($waivers);
+    if (exists($options{'w'}))
+    {
+      $waivers = LoadWaiverFile($options{'w'});
+    }
+    PrintSummary($stats, exists($options{'d'}), $waivers);
   }
 }
 
