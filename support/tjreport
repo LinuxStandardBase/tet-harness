@@ -8,9 +8,12 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.16 $
+# This is $Revision: 1.17 $
 #
 # $Log: tjreport,v $
+# Revision 1.17  2005/03/29 14:17:26  ajosey
+# revamp tjreport to get waiver files over the network if no other option specified, bug 650
+#
 # Revision 1.16  2005/03/29 07:35:01  ajosey
 # correct test counts, bug 213, have to count twice for os sections with M section tests generated
 #
@@ -155,6 +158,12 @@ sub GatherStats($) {
             next;
         }
 
+# record test version and also architecture
+        elsif ( $line =~ /^30\|.*VSX_NAME=LSB Certification Version (.*) (.*)$/ ) {
+            $stats->{TEST_VERS} = $1;
+            $stats->{TEST_ARCH} = $2;
+            next;
+        }
 # for the .os sections need to double expected counts to allow
 # for macro versions.
         elsif ( $line =~ /^70\|.*total tests in (ANSI|POSIX|LSB|PTHR).os ([0-9]+)/ ) {
@@ -344,6 +353,8 @@ sub PrintSummary($$$) {
     print "Test system: $stats->{TEST_SYSTEM}\n"
       unless ( !defined( $stats->{TEST_SYSTEM} ) );
     print "Test was run: $stats->{TEST_DATE} $stats->{TEST_TIME} \n";
+    print "Test Suite Version: $stats->{TEST_VERS}\n";
+    print "Test Suite Architecture: $stats->{TEST_ARCH}\n";
 
     print "Total Tests Passed: $stats->{TOTAL_TESTS_PASSED}\n";
     print
@@ -520,6 +531,38 @@ sub LoadWaiverFile($) {
 }
 
 #----------------------------------------------------------------------
+# Load networked waiver file via wget
+# Returns hash of waived tests
+sub LoadNetWaiverFile($) {
+    my $filename=shift;
+    local (*WAIVERFILE);
+    my $ret;
+    my ($waived) = {};
+
+    print "Loading networked waivers information -- file: $filename\n";
+    $ret = system "wget -nv --output-document=waivers.txt http://www.opengroup.org/infosrv/lsb/waivers/$filename 2>&1 >/dev/null" ;
+    if ( $ret != 0 )
+    {
+    	print "Warning, wget failed no network waivers retrieved\n";
+        return;
+    }
+
+    die "Could not open waiver file waivers.txt"
+      unless open( WAIVERFILE, "./waivers.txt" );
+    my ($line);
+    while ( defined( $line = <WAIVERFILE> ) ) {
+        chomp($line);
+
+        # '#' is the comment character for the waiver file
+        if ( $line !~ /^\#/ ) {
+            $waived->{$line} = 1;
+        }
+    }
+    return $waived;
+}
+
+
+#----------------------------------------------------------------------
 # Main bit
 
 my (%options);
@@ -602,6 +645,9 @@ else {
         my ($waivers);
         if ( exists( $options{'w'} ) ) {
             $waivers = LoadWaiverFile( $options{'w'} );
+        }
+        else  {
+        $waivers = LoadNetWaiverFile($stats->{TEST_VERS});
         }
         PrintSummary( $stats, exists( $options{'d'} ), $waivers );
     }
