@@ -18,6 +18,17 @@ It is also capable of loading the results from all the test suites into a
 .B Mysql
 database. If you want to do this you will need to also install the \fBDBI\fR
 and \fBDBD MySQL Perl\fR modules.
+
+If processing a single journal file with no options, tjreport attempts
+to retrieve information on granted waivers for that version of the test
+suite across the network using the
+.B wget
+utility.  Retrieved waiver information is stored in the file
+.B waivers.txt 
+in the current directory.
+Use of the
+.B \(miw
+option overrides networked waiver information retrieval.
 .SH "OPTIONS"
 .TP
 \fB\-h\fR
