@@ -8,9 +8,14 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.6 $
+# This is $Revision: 1.7 $
 #
 # $Log: tjreport,v $
+# Revision 1.7  2001/11/05 07:31:19  cyeoh
+# Fixes bug that caused the missing of some testcases
+# Adds cross check of testcase count
+# Removes debug of DBI calls
+#
 # Revision 1.6  2001/08/22 03:52:32  cyeoh
 # Fixes die error reporting
 # Adds storage and update of testsuite to test case mapping
@@ -115,7 +120,7 @@ sub GatherStats($)
     # Look for test results
     @line = split(/ /, $line);
     if ($line[0] =~ /^10/) { $testName = $line[1]; }
-    elsif ($line[0] =~ /^400/) 
+    elsif ($line[0] =~ /^200/) 
     { 
       $testNum = $line[1]; 
       $errorMessage = "";
@@ -242,10 +247,14 @@ sub PrintSummary($$)
 
   my($testName);
   my($testNum);
+  my($numTests);
+  my($secondCount) = 0;
   foreach $testName (sort keys %{$stats->{TESTS}})
   {
     foreach $testNum (sort {$a <=> $b} keys %{$stats->{TESTS}{$testName}})
     {
+      $secondCount++;
+#      print "$testName $testNum\n";
       if ( ($PFMap{$stats->{TESTS}{$testName}{$testNum}{STATE}} eq "FAIL")
 	   || $isDetailed )
       {
@@ -254,7 +263,11 @@ sub PrintSummary($$)
     }
   }
 
+  $numTests = $stats->{TOTAL_TESTS_PASSED} + $stats->{TOTAL_TESTS_FAILED};
+
   print "\n\n";
+  print "total_tests: $numTests\n";
+  print "total_tests (check): $secondCount\n";
   print "Test system: $stats->{TEST_SYSTEM}\n";
   print "Test was run: $stats->{TEST_DATE} $stats->{TEST_TIME} \n";
 
@@ -384,7 +397,7 @@ sub SetTestSuiteForTestcases($)
   while ($row = $sth->fetchrow_hashref)
   {
     print "$row->{TSname}\n";
-    $dbh->trace(1);
+#    $dbh->trace(1);
     $update = $dbh->prepare("UPDATE testcases SET testsuiteid=$row->{TSid} "
                             . "WHERE Name LIKE '%/$row->{TSIidstring}/%'")
         || die $dbh->errstr;
