@@ -8,9 +8,13 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.5 $
+# This is $Revision: 1.6 $
 #
 # $Log: tjreport,v $
+# Revision 1.6  2001/08/22 03:52:32  cyeoh
+# Fixes die error reporting
+# Adds storage and update of testsuite to test case mapping
+#
 # Revision 1.5  2001/08/14 08:31:59  cyeoh
 # Fix generation of description information so that
 # journal prefix ids are removed
@@ -348,7 +352,7 @@ sub LoadIntoDatabase($$$$)
       $sth->execute($testcaseId, $distroId,
                     $stats->{TESTS}{$testName}{$testNum}{STATE}, 
                     $errorMessage)
-          || die $dbh->errstr;
+          || die "$dbh->errstr\n$testName\n$testNum";
     }
   }
 
@@ -362,6 +366,35 @@ sub LoadIntoDatabase($$$$)
   $dbh->commit || die $dbh->errstr;
 
 }
+
+#----------------------------------------------------------------------
+# Set test suite values for each testcase
+sub SetTestSuiteForTestcases($)
+{
+  my($dbh) = shift;
+  my($sth);
+  my($row);
+  my($update);
+
+  $sth = $dbh->prepare("SELECT * from testsuites, testsuite_idstrings "
+                       . "where TSItestsuite=TSid")
+      || die $dbh->errstr;
+  $sth->execute() || die $sth->errstr;
+  
+  while ($row = $sth->fetchrow_hashref)
+  {
+    print "$row->{TSname}\n";
+    $dbh->trace(1);
+    $update = $dbh->prepare("UPDATE testcases SET testsuiteid=$row->{TSid} "
+                            . "WHERE Name LIKE '%/$row->{TSIidstring}/%'")
+        || die $dbh->errstr;
+    $update->execute() || die $update->errstr;
+  }
+
+  # Commit changes
+  $dbh->commit() || die $dbh->errstr;
+}
+
 
 #----------------------------------------------------------------------
 # Main bit
@@ -435,6 +468,7 @@ else
   if (exists($options{'b'}))
   {
     LoadIntoDatabase($dbh, $stats, $options{'e'}, $options{'r'});
+    SetTestSuiteForTestcases($dbh);
     $dbh->disconnect();
   }
   else
