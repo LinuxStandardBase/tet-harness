@@ -8,9 +8,13 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.4 $
+# This is $Revision: 1.5 $
 #
 # $Log: tjreport,v $
+# Revision 1.5  2001/08/14 08:31:59  cyeoh
+# Fix generation of description information so that
+# journal prefix ids are removed
+#
 # Revision 1.4  2001/08/14 04:59:55  cyeoh
 # Rework for change in db format.
 # Now keeps track of how many results available for each testcase
@@ -134,7 +138,7 @@ sub GatherStats($)
     elsif ($line[0] =~ /^520/)
     {
       # Accumulate any error/info messages associated with test
-      $line =~ /\|(.*)$/;
+      $line =~ /\|([^\|]*)$/;
       $tmp = $1;
       chomp($tmp);
       $errorMessage .= "$tmp\n";
