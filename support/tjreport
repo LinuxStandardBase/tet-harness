@@ -8,9 +8,12 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.15 $
+# This is $Revision: 1.16 $
 #
 # $Log: tjreport,v $
+# Revision 1.16  2005/03/29 07:35:01  ajosey
+# correct test counts, bug 213, have to count twice for os sections with M section tests generated
+#
 # Revision 1.15  2005/02/25 21:17:08  mats
 # Add a line counter so you can figure out what line the journal caused a failure
 #
@@ -150,6 +153,13 @@ sub GatherStats($) {
         elsif ( $line =~ /^30\|.*VSX_SYS=(.*)$/ ) {
             $stats->{TEST_SYSTEM} = $1;
             next;
+        }
+
+# for the .os sections need to double expected counts to allow
+# for macro versions.
+        elsif ( $line =~ /^70\|.*total tests in (ANSI|POSIX|LSB|PTHR).os ([0-9]+)/ ) {
+            $stats->{TOTAL_TESTS_EXPECTED} += $2;
+            $stats->{TOTAL_TESTS_EXPECTED} += $2;
         }
         elsif ( $line =~ /^70\|.*total tests in ([A-Za-z.0-9]+) ([0-9]+)/ ) {
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
