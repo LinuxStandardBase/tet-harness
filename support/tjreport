@@ -8,9 +8,12 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.1 $
+# This is $Revision: 1.2 $
 #
 # $Log: tjreport,v $
+# Revision 1.2  2001/08/13 04:51:04  cyeoh
+# Adds ability to add data into SQL database for further analysis
+#
 # Revision 1.1  2001/08/11 11:46:13  cyeoh
 # Initial version
 #
@@ -232,18 +235,88 @@ sub PrintSummary($$)
 }
 
 #----------------------------------------------------------------------
+#
+sub LoadIntoDatabase($$$$)
+{
+  my($dbh) = shift;
+  my($stats) = shift;
+  my($vendorName) = shift;
+  my($versionName) = shift;
+  my($testName);
+  my($testNum);
+  my($sth);
+  my($distroId);
+
+  print "Adding information to DB\n";
+
+  $sth = $dbh->prepare(
+    "SELECT distroId from distributions where vendorname='$vendorName'"
+                       . " and versionname='$versionName'") 
+      || die $dbh->errstr;
+  $sth->execute() || die $dbh->errstr;
+  if ($sth->rows==0)
+  {
+    # Add distribution information to database
+    print "Adding distribution information to database\n";
+    $sth = $dbh->prepare(
+      "INSERT INTO distributions (vendorname, versionname)"
+      . " Values ('$vendorName', '$versionName')")
+        || die $dbh->errstr;
+    $sth->execute() || die $dbh->errstr;
+    $sth = $dbh->prepare(
+      "SELECT distroId from distributions where vendorname='$vendorName'"
+         . " and versionname='$versionName'") 
+        || die $dbh->errstr;
+  $sth->execute() || die $dbh->errstr;
+  }
+  # Get distro id
+  $distroId = $sth->fetchrow_hashref->{distroId};
+  print "Distribution id: $distroId\n";
+
+  $sth = $dbh->prepare(
+    "INSERT INTO results (Testcases, Distro, State, Description)"
+  . "Values (?, ?, ?, ?)") 
+      || die $dbh->errstr;
+
+  foreach $testName (sort keys %{$stats->{TESTS}})
+  {
+    foreach $testNum (sort {$a <=> $b} keys %{$stats->{TESTS}{$testName}})
+    {
+#      if ( ($PFMap{$stats->{TESTS}{$testName}{$testNum}} eq "FAIL")
+#	   || $isDetailed )
+#      {
+#	print "$testName $testNum $stats->{TESTS}{$testName}{$testNum}\n";
+        $sth->execute("$testName-$testNum", $distroId,
+                      $stats->{TESTS}{$testName}{$testNum}, "a description")
+            || die $dbh->errstr;
+#      }
+    }
+  }
+  $dbh->commit || die $dbh->errstr;
+
+}
+
+#----------------------------------------------------------------------
 # Main bit
 
 my(%options);
 
-getopts('dh', \%options);
+getopts('dhu:p:b:e:r:o:', \%options);
 
 if (exists($options{'h'}) || ($#ARGV!=0 && $#ARGV!=1))
 {
   print STDERR <<"EOM"
-Usage: $0 [-h] [-d] journal [journal2]
-    -h Display Help
-    -d Detailed Summary
+Usage: $0 [-h] [-d] [-u username] [-p password] [-b db_name] 
+          [-e vendor_name] [-r version] journal [journal2]
+
+    -h               Display Help
+    -d               Detailed Summary
+    -u username      Username for db
+    -p password      Password for db
+    -b db_name       Database name
+    -o host          Host for databse (defaults to localhost)
+    -e vendor_name   Vendor name of distribution for data read
+    -r version       Version name for distribution for data read
     When one journal file is supplied a summary of the tests
     is output. When two journal files are supplied the difference
     between the two is shown.
@@ -253,6 +326,31 @@ EOM
     exit(0);
 }
 
+my($dbh);
+if (exists($options{'b'}))
+{
+  use DBI;
+  if (!exists($options{'e'}) || !exists($options{'r'}))
+  {
+    die "Must specify vendor and version of distribution\n";
+  }
+
+  my($data_source) = "DBI:mysql:database=$options{'b'}";
+  if (exists($options{'o'}))
+  {
+    $data_source .= ";host=$options{'o'}";
+  }
+
+  print "Using datasource: $data_source\n";
+  # DB Init
+  $dbh = DBI->connect($data_source, 
+                      exists($options{'u'}) ? $options{'u'} : "", 
+                      exists($options{'p'}) ? $options{'p'} : "", 
+                      { AutoCommit=>0});
+  die "Could not connect to database\n" unless defined($dbh);
+}
+
+# Diff or summary
 if ($#ARGV==1)
 {
   my($stats1);
@@ -267,6 +365,14 @@ else
 {
   my($stats);
   $stats = GatherStats($ARGV[0]);
-  PrintSummary($stats, exists($options{'d'}));
+  if (exists($options{'b'}))
+  {
+    LoadIntoDatabase($dbh, $stats, $options{'e'}, $options{'r'});
+    $dbh->disconnect();
+  }
+  else
+  {
+    PrintSummary($stats, exists($options{'d'}));
+  }
 }
 
