@@ -1,0 +1,77 @@
+--- tet3-lite-3.6b/src/scripts/tet_start.sh~	2005-02-28 16:37:02.000000000 +0000
++++ tet3-lite-3.6b/src/scripts/tet_start.sh	2005-02-28 16:37:12.000000000 +0000
+@@ -1,5 +1,5 @@
+ # -START-UNIX-ONLY-
+-#!/bin/ksh
++#!/bin/sh
+ # -END-UNIX-ONLY-
+ # -START-WIN32-ONLY-
+ : use the MKS shell
+diff -uNr tet3-lite-3.6b~/profile.skeleton tet3-lite-3.6b/profile.skeleton
+--- tet3-lite-3.6b~/profile.skeleton	1970-01-01 01:00:00.000000000 +0100
++++ tet3-lite-3.6b/profile.skeleton	2005-03-02 11:59:09.119785960 +0000
+@@ -0,0 +1,32 @@
++# sample profile for tet3
++HOME=`pwd`
++echo Unconfigured
++PATH=$TET_ROOT/bin:$PATH
++MANPATH=$MANPATH:$TET_ROOT/man
++export TET_ROOT PATH MANPATH
++
++# useful shell functions for TET
++tccb()
++{
++tcc -b -s $HOME/scen.bld $*
++}
++
++tcce()
++{
++tcc -e -s $HOME/scen.exec $*
++}
++
++tccc()
++{
++tcc -c -s $HOME/scen.bld $*
++}
++
++jrpt()
++{
++(cd $HOME/results; vrpt -l ${1-area} -HP `ls -d 0* | tail -1`/journal | less)
++}
++
++jx()
++{
++(cd $HOME/results; vres `ls -d 0* | tail -1`/journal | less)
++}
+diff -ur tet3-lite-3.6b~/src/defines/linux.mk tet3-lite-3.6b/src/defines/linux.mk
+--- tet3-lite-3.6b~/src/defines/linux.mk	2005-03-02 11:56:53.000000000 +0000
++++ tet3-lite-3.6b/src/defines/linux.mk	2005-03-03 12:01:38.547273040 +0000
+@@ -88,10 +88,15 @@
+ DTET_CDEFS = -DINETD
+ 
+ # CC - the name of the C compiler
+-CC = gcc
++CC = /opt/lsb/bin/lsbcc
+ #
+ # LD_R - the program that performs partial linking
++BUILD_ARCH=$(shell uname -m)
++ifeq ($(BUILD_ARCH),ppc64)
++LD_R = ld -r -m elf64ppc
++else
+ LD_R = ld -r
++endif
+ #
+ # CDEFS and COPTS - options that are always passed to cc when compiling
+ # program and "ordinary" library files
+@@ -101,7 +106,11 @@
+ # and usually defines NSIG (the highest signal number plus one)
+ # COPTS is used to specify other options (e.g.: -O)
+ CDEFS = -I$(INC) -I$(DINC)
++ifeq ($(BUILD_ARCH),x86_64)
++COPTS = -O -fPIC
++else
+ COPTS = -O
++endif
+ #
+ # LDFLAGS - options that are always passed to cc when linking
+ LDFLAGS =
