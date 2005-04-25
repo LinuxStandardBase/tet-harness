@@ -1,0 +1,41 @@
+Summary: Test Environment Toolkit
+Name: lsb-tet3-lite
+Vendor: The Open Group
+URL: http://tetworks.opengroup.org/tet
+Version: 3.6b
+License: Artistic
+
+Two packages are created
+
+lsb-tet3-lite
+lsb-tet3-lite-devel
+
+
+This is an LSB conforming package of the Test Environment Toolkit.
+This base package contains the tcc binary and supporting documentation.
+The Test Environment Toolkit is a standard framework for
+developing and running test cases.
+This version for LSB 3.0.
+
+The package name and path are registered with LANANA
+
+Sources are imported from upstream, see the Makefile
+for details.
+
+Requires wget (in the Makefile) to retrieve upstream sources
+
+Requires lsbcc for compilation
+
+Installs into /opt/lsb-tet3-lite 
+
+
+
+To use the TET-lite package set your TET_ROOT, PATH and MANPATH environment
+variables, for example:
+   export TET_ROOT=/opt/lsb-tet3-lite
+   export PATH=$PATH:$TET_ROOT/bin
+   export MANPATH=$MANPATH:$TET_ROOT/man
+See /opt/lsb-tet3-lite/profile for sample profile additions
+
+
+
