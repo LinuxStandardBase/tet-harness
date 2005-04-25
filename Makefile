@@ -11,7 +11,7 @@
 # Author: Andrew Josey, The Open Group, April 2005
 # 
 #========================================================
-# You probably need to edit RPM_SOURCE_DIR
+# You will need to edit RPM_SOURCE_DIR
 #
 # If you use Fedora/RHEL you need write access to this 
 # directory unless you set your own rpm build directory
@@ -26,8 +26,13 @@
 #
 #========================================================
 #
+# Edit the next line as required
 #
 RPM_SOURCE_DIR	=	/home/ajosey/rpm/SOURCES
+#
+#========================================================
+# In theory the rest should not need changing
+#
 SOURCE1	=	tet3.6b-lite.unsup.src.tgz
 SOURCE2	=	tet3-lite-manpages.tgz
 PATCH1	=	tet3.6b-lite-lsb.patch
