@@ -6,7 +6,7 @@ Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.6b
-Release: 5
+Release: 6
 Source0: tet3.6b-lite.unsup.src.tgz
 Source1: tet3-lite-manpages.tgz
 Patch0: tet3.6b-lite-lsb.patch
@@ -42,7 +42,9 @@ AutoReqProv: no
 
 %description
 This is an LSB conforming package of the Test Environment Toolkit.
-This base package contains the tcc binary and supporting documentation.
+This base package contains the tcc binary, shared objects for
+the C API, and tcm modules for the ksh, posix_sh, perl and xpg3sh
+APIs, and supporting documentation.
 The Test Environment Toolkit is a standard framework for
 developing and running test cases.
 This version for LSB 3.0.
@@ -84,8 +86,13 @@ sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/lsb-tet3-lite@" profil
 /opt/lsb-tet3-lite/bin
 #/opt/lsb-tet3-lite/inc
 #/opt/lsb-tet3-lite/lib
+/opt/lsb-tet3-lite/lib/ksh/tcm.ksh
+/opt/lsb-tet3-lite/lib/perl/tcm.pl
+/opt/lsb-tet3-lite/lib/posix_sh/tcm.sh
+/opt/lsb-tet3-lite/lib/tet3/libapi_s.so
+/opt/lsb-tet3-lite/lib/tet3/libthrapi_s.so
+/opt/lsb-tet3-lite/lib/xpg3sh/tcm.sh
 /opt/lsb-tet3-lite/profile
-
 %dir /opt/lsb-tet3-lite
 %dir /opt/lsb-tet3-lite/man
 
@@ -129,6 +136,11 @@ echo
 
 
 %changelog
+
+* Mon Apr 18 2005  Andrew Josey
+
+The runtime package should include tcm runtime parts of the lib tree
+
 
 * Mon Apr 18 2005  Andrew Josey
 
