@@ -7,7 +7,14 @@
 # This will fetch upstream sources, and install them
 # and a patch into the RPM_SOURCE_DIR and then
 # call rpmbuild
+# The rpms will install into /opt/lsb-tet3-lite,
+# which is a LANANA registered path for the package
 #
+# You can also call 
+# 	make tetpackages 
+# to build non-LSB conforming rpms. These install into
+# /opt/tet3-lite
+
 # Author: Andrew Josey, The Open Group, April 2005
 # 
 #========================================================
@@ -38,6 +45,9 @@ SOURCE2	=	tet3-lite-manpages.tgz
 PATCH1	=	tet3.6b-lite-lsb.patch
 UPSTREAMSOURCES = $(SOURCE1) $(SOURCE2)
 TETURL	=	http://www.opengroup.org/infosrv/TET/TET3/
+
+# this patch for building regular nonlsb tet packages
+TPATCH1	=	tet3.6b-lite.patch
                                                                                 
 first_make_rule: all
                                                                                 
@@ -57,5 +67,11 @@ fetchsrc:
                 chmod 644 $(RPM_SOURCE_DIR)/$$i;                            \
         done;           
 
+
+# tetpackages are built using the regular gcc
+tetpackages:
+	@cp $(TPATCH1) $(RPM_SOURCE_DIR)/;
+	rpmbuild -ba tet3-lite.spec
+
 clean clobber:
-	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1)
+	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1)
