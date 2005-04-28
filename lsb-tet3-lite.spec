@@ -87,11 +87,15 @@ sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/lsb-tet3-lite@" profil
 #/opt/lsb-tet3-lite/inc
 #/opt/lsb-tet3-lite/lib
 /opt/lsb-tet3-lite/lib/ksh/tcm.ksh
+/opt/lsb-tet3-lite/lib/ksh/tetapi.ksh
+/opt/lsb-tet3-lite/lib/perl/api.pl
 /opt/lsb-tet3-lite/lib/perl/tcm.pl
 /opt/lsb-tet3-lite/lib/posix_sh/tcm.sh
+/opt/lsb-tet3-lite/lib/posix_sh/tetapi.sh
 /opt/lsb-tet3-lite/lib/tet3/libapi_s.so
 /opt/lsb-tet3-lite/lib/tet3/libthrapi_s.so
 /opt/lsb-tet3-lite/lib/xpg3sh/tcm.sh
+/opt/lsb-tet3-lite/lib/xpg3sh/tetapi.sh
 /opt/lsb-tet3-lite/profile
 %dir /opt/lsb-tet3-lite
 %dir /opt/lsb-tet3-lite/man
