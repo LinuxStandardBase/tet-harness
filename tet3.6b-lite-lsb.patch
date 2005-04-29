@@ -1,15 +1,6 @@
---- tet3-lite-3.6b/src/scripts/tet_start.sh~	2005-02-28 16:37:02.000000000 +0000
-+++ tet3-lite-3.6b/src/scripts/tet_start.sh	2005-02-28 16:37:12.000000000 +0000
-@@ -1,5 +1,5 @@
- # -START-UNIX-ONLY-
--#!/bin/ksh
-+#!/bin/sh
- # -END-UNIX-ONLY-
- # -START-WIN32-ONLY-
- : use the MKS shell
 diff -uNr tet3-lite-3.6b~/profile.skeleton tet3-lite-3.6b/profile.skeleton
---- tet3-lite-3.6b~/profile.skeleton	1970-01-01 01:00:00.000000000 +0100
-+++ tet3-lite-3.6b/profile.skeleton	2005-03-02 11:59:09.119785960 +0000
+--- tet3-lite-3.6b~/profile.skeleton	1970-01-01 08:00:00.000000000 +0800
++++ tet3-lite-3.6b/profile.skeleton	2005-04-29 16:28:01.259161080 +0800
 @@ -0,0 +1,32 @@
 +# sample profile for tet3
 +HOME=`pwd`
@@ -43,9 +34,9 @@ diff -uNr tet3-lite-3.6b~/profile.skeleton tet3-lite-3.6b/profile.skeleton
 +{
 +(cd $HOME/results; vres `ls -d 0* | tail -1`/journal | less)
 +}
-diff -ur tet3-lite-3.6b~/src/defines/linux.mk tet3-lite-3.6b/src/defines/linux.mk
---- tet3-lite-3.6b~/src/defines/linux.mk	2005-03-02 11:56:53.000000000 +0000
-+++ tet3-lite-3.6b/src/defines/linux.mk	2005-03-03 12:01:38.547273040 +0000
+diff -uNr tet3-lite-3.6b~/src/defines/linux.mk tet3-lite-3.6b/src/defines/linux.mk
+--- tet3-lite-3.6b~/src/defines/linux.mk	2002-05-14 18:40:31.000000000 +0800
++++ tet3-lite-3.6b/src/defines/linux.mk	2005-04-29 16:38:10.093604176 +0800
 @@ -88,10 +88,15 @@
  DTET_CDEFS = -DINETD
  
@@ -75,3 +66,22 @@ diff -ur tet3-lite-3.6b~/src/defines/linux.mk tet3-lite-3.6b/src/defines/linux.m
  #
  # LDFLAGS - options that are always passed to cc when linking
  LDFLAGS =
+@@ -179,7 +188,7 @@
+ #
+ # C_PLUS - the name of the C++ compiler
+ # To disable C++ support, set C_PLUS = CPLUSPLUS_NOT_SUPPORTED.
+-C_PLUS = g++
++C_PLUS = /opt/lsb/bin/lsbc++
+ # C_SUFFIX - suffix for C++ source files
+ # (without an initial dot; e.g: C, cpp etc.)
+ C_SUFFIX = C
+diff -uNr tet3-lite-3.6b~/src/scripts/tet_start.sh tet3-lite-3.6b/src/scripts/tet_start.sh
+--- tet3-lite-3.6b~/src/scripts/tet_start.sh	2002-05-14 18:40:39.000000000 +0800
++++ tet3-lite-3.6b/src/scripts/tet_start.sh	2005-04-29 16:28:01.251162296 +0800
+@@ -1,5 +1,5 @@
+ # -START-UNIX-ONLY-
+-#!/bin/ksh
++#!/bin/sh
+ # -END-UNIX-ONLY-
+ # -START-WIN32-ONLY-
+ : use the MKS shell
