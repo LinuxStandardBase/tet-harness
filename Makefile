@@ -55,21 +55,25 @@ first_make_rule: all
 # remember that all shell commands need to be terminated by a ';'
 # dummy is a dummy file to copy in place 
                                                                                 
-all:	fetchsrc
+all:	$(UPSTREAMSOURCES) $(PATCH1) lsb-tet3-lite.spec
+	@cp $(UPSTREAMSOURCES) $(RPM_SOURCE_DIR)/;
 	@cp $(PATCH1) $(RPM_SOURCE_DIR)/; 
 	rpmbuild -ba lsb-tet3-lite.spec
 
-fetchsrc:
+fetchsrc: $(UPSTREAMSOURCES)
+
+$(UPSTREAMSOURCES):
 	@for i in $(UPSTREAMSOURCES);                                       \
         do                                                                  \
-                echo $(RPM_SOURCE_DIR)/$$i...;                              \
-                wget -O $(RPM_SOURCE_DIR)/$$i $(TETURL)/$$i;                \
+                echo fetching $(TETURL)/$$i ...;                              \
+                wget -O $$i $(TETURL)/$$i;                \
                 chmod 644 $(RPM_SOURCE_DIR)/$$i;                            \
         done;           
 
 
 # tetpackages are built using the regular gcc
-tetpackages:
+tetpackages: $(UPSTREAMSOURCES) $(TPATCH1) tet3-lite.spec 
+	@cp $(UPSTREAMSOURCES) $(RPM_SOURCE_DIR)/;
 	@cp $(TPATCH1) $(RPM_SOURCE_DIR)/;
 	rpmbuild -ba tet3-lite.spec
 
