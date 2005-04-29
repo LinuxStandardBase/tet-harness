@@ -55,6 +55,12 @@ if [ ! -x /opt/lsb/bin/lsbcc ] ; then
     printf "lsbcc not found, required for compilation, aborting\n"
     exit 1
 fi
+
+if [ ! -x /opt/lsb/bin/lsbc++ ] ; then
+    printf "lsbc++ not found, required for compilation, aborting\n"
+    exit 1
+fi
+
 %setup -n tet3-lite-3.6b -q -a1
 %patch -p1
 
