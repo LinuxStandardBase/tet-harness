@@ -41,7 +41,7 @@ RPM_SOURCE_DIR	=	/home/ajosey/rpm/SOURCES
 # In theory the rest should not need changing
 #
 SOURCE1	=	tet3.6b-lite.unsup.src.tgz
-SOURCE2	=	tet3-lite-manpages.tgz
+SOURCE2	=	tet3-lite-manpages-v1.1.tgz
 PATCH1	=	tet3.6b-lite-lsb.patch
 UPSTREAMSOURCES = $(SOURCE1) $(SOURCE2)
 TETURL	=	http://www.opengroup.org/infosrv/TET/TET3/
