@@ -67,7 +67,7 @@ $(UPSTREAMSOURCES):
         do                                                                  \
                 echo fetching $(TETURL)/$$i ...;                              \
                 wget -O $$i $(TETURL)/$$i;                \
-                chmod 644 $(RPM_SOURCE_DIR)/$$i;                            \
+                chmod 644 $$i;                            \
         done;           
 
 
@@ -78,4 +78,4 @@ tetpackages: $(UPSTREAMSOURCES) $(TPATCH1) tet3-lite.spec
 	rpmbuild -ba tet3-lite.spec
 
 clean clobber:
-	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1)
+	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2)
