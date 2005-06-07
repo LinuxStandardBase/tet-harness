@@ -6,7 +6,7 @@ Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.6b
-Release: 6
+Release: 7
 Source0: tet3.6b-lite.unsup.src.tgz
 Source1: tet3-lite-manpages.tgz
 Patch0: tet3.6b-lite-lsb.patch
@@ -127,7 +127,35 @@ framework for developing and running test cases.
 %defattr(-,bin,bin)
 
 /opt/lsb-tet3-lite/inc
-/opt/lsb-tet3-lite/lib
+#/opt/lsb-tet3-lite/lib
+/opt/lsb-tet3-lite/lib/tet3/libapi.a
+/opt/lsb-tet3-lite/lib/tet3/libthrapi.a
+/opt/lsb-tet3-lite/lib/tet3/tcm.o
+/opt/lsb-tet3-lite/lib/tet3/tcmchild.o
+/opt/lsb-tet3-lite/lib/tet3/tcm_m.o
+/opt/lsb-tet3-lite/lib/tet3/tcmc_m.o
+/opt/lsb-tet3-lite/lib/tet3/thrtcm.o
+/opt/lsb-tet3-lite/lib/tet3/thrtcmchild.o
+/opt/lsb-tet3-lite/lib/tet3/thrtcm_m.o
+/opt/lsb-tet3-lite/lib/tet3/thrtcmc_m.o
+/opt/lsb-tet3-lite/lib/tet3/libtcm_s.a
+/opt/lsb-tet3-lite/lib/tet3/tcm_s.o
+/opt/lsb-tet3-lite/lib/tet3/tcmchild_s.o
+/opt/lsb-tet3-lite/lib/tet3/tcm_ms.o
+/opt/lsb-tet3-lite/lib/tet3/tcmc_ms.o
+/opt/lsb-tet3-lite/lib/tet3/libthrtcm_s.a
+/opt/lsb-tet3-lite/lib/tet3/thrtcm_s.o
+/opt/lsb-tet3-lite/lib/tet3/thrtcmchild_s.o
+/opt/lsb-tet3-lite/lib/tet3/thrtcm_ms.o
+/opt/lsb-tet3-lite/lib/tet3/thrtcmc_ms.o
+/opt/lsb-tet3-lite/lib/tet3/Ctcm.o
+/opt/lsb-tet3-lite/lib/tet3/Ctcmchild.o
+/opt/lsb-tet3-lite/lib/tet3/Cthrtcm.o
+/opt/lsb-tet3-lite/lib/tet3/Cthrtcmchild.o
+/opt/lsb-tet3-lite/lib/tet3/Ctcm_s.o
+/opt/lsb-tet3-lite/lib/tet3/Ctcmchild_s.o
+/opt/lsb-tet3-lite/lib/tet3/Cthrtcm_s.o
+/opt/lsb-tet3-lite/lib/tet3/Cthrtcmchild_s.o
 %doc /opt/lsb-tet3-lite/man/man3
 
 
@@ -146,6 +174,10 @@ echo
 
 
 %changelog
+
+* Tue Jun 07 2005  Andrew Josey
+
+Ensure devel tree does not overlap with base in lib/tet3/
 
 * Mon Apr 18 2005  Andrew Josey
 
