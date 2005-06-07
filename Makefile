@@ -22,7 +22,7 @@
 #
 # If you use Fedora/RHEL you need write access to this 
 # directory unless you set your own rpm build directory
-#RPM_SOURCE_DIR	=	/usr/src/redhat/SOURCES
+RPM_SOURCE_DIR	=	/usr/src/redhat/SOURCES
 #
 # To set your own rpm build directory, for example set
 # 		%_topdir /home/ajosey/rpm
@@ -35,7 +35,7 @@
 #
 # Edit the next line as required
 #
-RPM_SOURCE_DIR	=	/home/ajosey/rpm/SOURCES
+# RPM_SOURCE_DIR	=	/home/ajosey/rpm/SOURCES
 #
 #========================================================
 # In theory the rest should not need changing
@@ -43,6 +43,8 @@ RPM_SOURCE_DIR	=	/home/ajosey/rpm/SOURCES
 SOURCE1	=	tet3.6b-lite.unsup.src.tgz
 SOURCE2	=	tet3-lite-manpages-v1.1.tgz
 PATCH1	=	tet3.6b-lite-lsb.patch
+SUPPORT =	support.tgz
+SOURCE3 =	$(SUPPORT)
 UPSTREAMSOURCES = $(SOURCE1) $(SOURCE2)
 TETURL	=	http://www.opengroup.org/infosrv/TET/TET3/
 
@@ -55,8 +57,9 @@ first_make_rule: all
 # remember that all shell commands need to be terminated by a ';'
 # dummy is a dummy file to copy in place 
                                                                                 
-all:	$(UPSTREAMSOURCES) $(PATCH1) lsb-tet3-lite.spec
+all:	$(UPSTREAMSOURCES) $(SUPPORT) $(PATCH1) lsb-tet3-lite.spec
 	@cp $(UPSTREAMSOURCES) $(RPM_SOURCE_DIR)/;
+	@cp $(SUPPORT) $(RPM_SOURCE_DIR)/;
 	@cp $(PATCH1) $(RPM_SOURCE_DIR)/; 
 	rpmbuild -ba lsb-tet3-lite.spec
 
@@ -70,12 +73,15 @@ $(UPSTREAMSOURCES):
                 chmod 644 $$i;                            \
         done;           
 
+$(SUPPORT): support/tjreport support/tjreport.1
+	tar zcvf $(SUPPORT) support
 
 # tetpackages are built using the regular gcc
 tetpackages: $(UPSTREAMSOURCES) $(TPATCH1) tet3-lite.spec 
 	@cp $(UPSTREAMSOURCES) $(RPM_SOURCE_DIR)/;
+	@cp $(SUPPORT) $(RPM_SOURCE_DIR)/;
 	@cp $(TPATCH1) $(RPM_SOURCE_DIR)/;
 	rpmbuild -ba tet3-lite.spec
 
 clean clobber:
-	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2)
+	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2)
