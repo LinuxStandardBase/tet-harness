@@ -8,7 +8,8 @@ URL: http://tetworks.opengroup.org/tet
 Version: 3.6b
 Release: 7
 Source0: tet3.6b-lite.unsup.src.tgz
-Source1: tet3-lite-manpages.tgz
+Source1: tet3-lite-manpages-v1.1.tgz
+Source2: support.tgz
 Patch0: tet3.6b-lite-lsb.patch
 License: Artistic
 Group: Development/Tools
@@ -83,6 +84,13 @@ install -m 555 contrib/scripts/vres $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/vres
 install -m 555 contrib/scripts/dres $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/dres
 
 sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/lsb-tet3-lite@" profile.skeleton > $RPM_BUILD_ROOT/opt/lsb-tet3-lite/profile 
+
+tar zxvf $RPM_SOURCE_DIR/support.tgz
+install -m 555 support/tjreport $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/tjreport
+cp support/tjreport.1 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/
+ 
+chmod 755 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man3 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man4
+chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man3/* $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man4/*
 
 
 %files
