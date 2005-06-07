@@ -55,6 +55,7 @@ sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/tet3-lite@" profile.sk
 /opt/tet3-lite/lib/ksh/tetapi.ksh
 /opt/tet3-lite/lib/perl/api.pl
 /opt/tet3-lite/lib/perl/tcm.pl
+/opt/tet3-lite/lib/perl/README
 /opt/tet3-lite/lib/posix_sh/tcm.sh
 /opt/tet3-lite/lib/posix_sh/tetapi.sh
 /opt/tet3-lite/lib/tet3/libapi_s.so
