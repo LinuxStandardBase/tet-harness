@@ -102,7 +102,35 @@ framework for developing and running test cases.
 %defattr(-,bin,bin)
 
 /opt/tet3-lite/inc
-/opt/tet3-lite/lib
+#/opt/tet3-lite/lib
+/opt/tet3-lite/lib/tet3/libapi.a
+/opt/tet3-lite/lib/tet3/libthrapi.a
+/opt/tet3-lite/lib/tet3/tcm.o
+/opt/tet3-lite/lib/tet3/tcmchild.o
+/opt/tet3-lite/lib/tet3/tcm_m.o
+/opt/tet3-lite/lib/tet3/tcmc_m.o
+/opt/tet3-lite/lib/tet3/thrtcm.o
+/opt/tet3-lite/lib/tet3/thrtcmchild.o
+/opt/tet3-lite/lib/tet3/thrtcm_m.o
+/opt/tet3-lite/lib/tet3/thrtcmc_m.o
+/opt/tet3-lite/lib/tet3/libtcm_s.a
+/opt/tet3-lite/lib/tet3/tcm_s.o
+/opt/tet3-lite/lib/tet3/tcmchild_s.o
+/opt/tet3-lite/lib/tet3/tcm_ms.o
+/opt/tet3-lite/lib/tet3/tcmc_ms.o
+/opt/tet3-lite/lib/tet3/libthrtcm_s.a
+/opt/tet3-lite/lib/tet3/thrtcm_s.o
+/opt/tet3-lite/lib/tet3/thrtcmchild_s.o
+/opt/tet3-lite/lib/tet3/thrtcm_ms.o
+/opt/tet3-lite/lib/tet3/thrtcmc_ms.o
+/opt/tet3-lite/lib/tet3/Ctcm.o
+/opt/tet3-lite/lib/tet3/Ctcmchild.o
+/opt/tet3-lite/lib/tet3/Cthrtcm.o
+/opt/tet3-lite/lib/tet3/Cthrtcmchild.o
+/opt/tet3-lite/lib/tet3/Ctcm_s.o
+/opt/tet3-lite/lib/tet3/Ctcmchild_s.o
+/opt/tet3-lite/lib/tet3/Cthrtcm_s.o
+/opt/tet3-lite/lib/tet3/Cthrtcmchild_s.o
 %doc /opt/tet3-lite/man/man3
 
 #-------------------------contrib--------------------
@@ -130,6 +158,10 @@ framework for developing and running test cases.
 
 #----------------------------------------
 %changelog
+
+* Tue Jun 07 2005  Andrew Josey
+
+Ensure devel package lib/tet3 tree does not overlap with base package
 
 * Thu Apr  28 2005  Andrew Josey
 
