@@ -2,9 +2,9 @@
 Summary: Test Environment Toolkit
 Name: tet3-lite
 Version: 3.6b
-Release: 4
+Release: 8
 Source0: tet3.6b-lite.unsup.src.tgz
-Source1: tet3-lite-manpages.tgz
+Source1: tet3-lite-manpages-v1.1.tgz
 Patch0: tet3.6b-lite.patch
 License: Artistic
 Group: Development/Tools
@@ -39,7 +39,6 @@ mkdir -p $RPM_BUILD_ROOT/opt/tet3-lite/doc
 cp  README.FIRST Artistic Licence $RPM_BUILD_ROOT/opt/tet3-lite/doc/
 install -m 555 contrib/scripts/vres $RPM_BUILD_ROOT/opt/tet3-lite/bin/vres
 install -m 555 contrib/scripts/dres $RPM_BUILD_ROOT/opt/tet3-lite/bin/dres
-
 
 sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/tet3-lite@" profile.skeleton > $RPM_BUILD_ROOT/opt/tet3-lite/profile 
 
