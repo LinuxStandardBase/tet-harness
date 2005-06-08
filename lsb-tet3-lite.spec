@@ -19,27 +19,27 @@ AutoReqProv: no
 
 # comment this out, since it often means that the
 # package cannot be installed , the value 3.0 is for LSB 3.0
-#%ifarch i386 i486 i585 i686 athlon
-#PreReq: lsb-core-ia32 >= 3.0
-#%endif
-#%ifarch ia64
-#PreReq: lsb-core-ia64 >= 3.0
-#%endif
-#%ifarch ppc
-#PreReq: lsb-core-ppc32 >= 3.0
-#%endif
-#%ifarch ppc64
-#PreReq: lsb-core-ppc64 >= 3.0
-#%endif
-#%ifarch s390
-#PreReq: lsb-core-s390 >= 3.0
-#%endif
-#%ifarch s390x
-#PreReq: lsb-core-s390x >= 3.0
-#%endif
-#%ifarch x86_64
-#PreReq: lsb-core-amd64 >= 3.0
-#%endif
+%ifarch i386 i486 i585 i686 athlon
+PreReq: lsb-core-ia32 >= 3.0
+%endif
+%ifarch ia64
+PreReq: lsb-core-ia64 >= 3.0
+%endif
+%ifarch ppc
+PreReq: lsb-core-ppc32 >= 3.0
+%endif
+%ifarch ppc64
+PreReq: lsb-core-ppc64 >= 3.0
+%endif
+%ifarch s390
+PreReq: lsb-core-s390 >= 3.0
+%endif
+%ifarch s390x
+PreReq: lsb-core-s390x >= 3.0
+%endif
+%ifarch x86_64
+PreReq: lsb-core-amd64 >= 3.0
+%endif
 
 %description
 This is an LSB conforming package of the Test Environment Toolkit.
