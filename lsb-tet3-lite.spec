@@ -1,12 +1,15 @@
 # LSB Compliant packages require the following in ~/.rpmmacros
 #%_binary_payload	w9.gzdio
 
+# LSB release version
+%define LSBRelease 3
+
 Summary: Test Environment Toolkit
 Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.6b
-Release: 8
+Release: 8.lsb%{LSBRelease}
 Source0: tet3.6b-lite.unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
