@@ -1,0 +1,136 @@
+2005-12-31	Rui Feng <fengrui_at_cn.ibm.com>
+	* rpmrc
+	  Makefile
+	   erase the building environments dependency
+
+2005-06-30	Rui Feng <fengrui_at_cn.ibm.com>
+	* lsb-tet3-lite.spec
+	  Makefile
+	   update the name scheme
+
+2005-06-08	Rui Feng <fengrui_at_cn.ibm.com>
+	* tet3-lite.spec
+	  Makefile
+	  lsb-tet3-lite.spec
+	  rpmmacros
+	  rpmrc
+	   fix for bugid 980 and necessary changes
+
+2005-06-07	Andrew Josey <ajosey_at_rdg.opengroup.org>
+	* tet3-lite.spec
+	  Makefile
+	  lsb-tet3-lite.spec
+	  tet3-lite.spec
+	   correct chmod after wget to local directory, remove wget files
+	   on clean and clobber
+
+2005-06-07	Rui Feng <fengrui_at_cn.ibm.com>
+	* lsb-tet3-lite.spec
+	  Makefile
+	  TODO
+	   integerate the latest tjreport
+
+2005-06-03	Andrew Josey <ajosey_at_rdg.opengroup.org>
+	* Makefile
+	   Update manpages bundle included
+
+2005-04-30	Rui Feng <fengrui_at_cn.ibm.com>
+	* tet3.6b-lite-lsb.patch
+	   Remove -DNSIG=_NSIG flag when building using lsbcc
+
+2005-04-29	Rui Feng <fengrui_at_cn.ibm.com>
+	* tet3.6b-lite-lsb.patch
+	  Makefile
+	  TODO
+	  lsb-tet3-lite.spec
+	   needlessly fetch the upstream targets if they already exists
+
+2005-04-28	Andrew Josey <ajosey_at_rdg.opengroup.org>
+	* tet3.6b-lite.patch
+	  Makefile
+	  lsb-tet3-lite.spec
+	  tet3-lite.spec
+	   update Makefile for non-lsb packages, built with make
+	   tetpackages target
+
+2005-04-25	Andrew Josey <ajosey_at_rdg.opengroup.org>
+	* tet3.6b-lite-lsb.patch
+	  Makefile
+	  README
+	  TODO
+	  lsb-tet3-lite.spec
+	   minor tweaks to Makefile
+
+2005-03-29	Andrew Josey <ajosey_at_rdg.opengroup.org>
+	* support/tjreport.1
+	  support/tjreport
+	   allow for TEST_VERS and TEST_ARCH not to be set
+
+2005-02-25	Mats Wichmann <mats.d.wichmann_at_intel.com>
+	* support/tjreport
+	   Add a line counter so you can figure out what line the journal
+	   caused a failure
+
+2005-02-24	Mats Wichmann <mats.d.wichmann_at_intel.com>
+	* support/tjreport
+	   Output cleanup per bug 698
+
+2004-05-12	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Checks that expected number of test results matches with number
+	   of test results seen. It only checks if a non zero number of
+	   results is expected to support journal files which do not
+	   specify the expected number of test results
+
+2004-03-28	Mats Wichmann <mats.d.wichmann_at_intel.com>
+	* support/tjreport
+	   Collected tweaks: improve processing loop, accept build and
+	   clean journals as well (110, 300 lines), quit if journal is
+	   corrupt (e.g. hand-edited)
+
+2003-10-31	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Only print test system information if it exists Adds verbose
+	   flag which causes error information to be printed
+
+2003-07-17	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   change error about test inconsistency to warning as lsblibchk is
+	   creating duplicates at the moment
+
+2002-07-31	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport.1
+	   adds man page for tjreport
+
+2002-01-16	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   clean up help information remove dependency on DBI when not used
+
+2001-12-04	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Add support for waiver files
+
+2001-11-05	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Fixes bug that caused the missing of some testcases Adds cross
+	   check of testcase count Removes debug of DBI calls
+
+2001-08-22	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Fixes die error reporting Adds storage and update of testsuite
+	   to test case mapping
+
+2001-08-14	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Fix generation of description information so that journal prefix
+	   ids are removed
+
+2001-08-13	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Adds ability to add data into SQL database for further analysis
+
+2001-08-11	Christopher Yeoh <cyeoh_at_samba.org>
+	* support/tjreport
+	   Initial version
+
+1136022816
