@@ -62,7 +62,7 @@ endif
 # NOTE THAT RPM_TMP_BUILD_DIR IS DELETED AFTER THE RPM BUILD IS COMPLETED
 # The rpmrc file translates targets where there are multiple choices per
 # architecture. On build, the derived RPM_BUILD_ARCH is given as the target
-RCFILELIST="/usr/lib/rpm/rpmrc:~/.rpmrc:./rpmrc"
+RCFILELIST="/usr/lib/rpm/rpmrc:./rpmrc"
 RPM_TMP_BUILD_DIR=/var/tmp/rpm-build
 RPM_BUILD_ARCH=$(shell rpm --rcfile ${RCFILELIST} --eval=%{_build_arch})
 RPM_BINARY_DIR=$(RPM_TMP_BUILD_DIR)/RPMS/$(RPM_BUILD_ARCH)
