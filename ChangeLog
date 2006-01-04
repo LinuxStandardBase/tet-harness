@@ -1,3 +1,7 @@
+2006-01-04	Rui Feng <fengrui_at_cn.ibm.com>
+	* Makefile
+	   correct the setting of RPM_BUILD_ARCH
+
 2005-12-31	Rui Feng <fengrui_at_cn.ibm.com>
 	* rpmrc
 	  Makefile
@@ -133,4 +137,4 @@
 	* support/tjreport
 	   Initial version
 
-1136022816
+1170570382
