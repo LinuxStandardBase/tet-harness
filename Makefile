@@ -64,7 +64,7 @@ endif
 # architecture. On build, the derived RPM_BUILD_ARCH is given as the target
 RCFILELIST="/usr/lib/rpm/rpmrc:./rpmrc"
 RPM_TMP_BUILD_DIR=/var/tmp/rpm-build
-RPM_BUILD_ARCH=$(shell rpm --rcfile ${RCFILELIST} --eval=%{_build_arch})
+RPM_BUILD_ARCH=$(shell rpm --rcfile ${RCFILELIST} --eval=%{_target_cpu})
 RPM_BINARY_DIR=$(RPM_TMP_BUILD_DIR)/RPMS/$(RPM_BUILD_ARCH)
 RPM_SRPM_DIR=$(RPM_TMP_BUILD_DIR)/SRPMS
 
