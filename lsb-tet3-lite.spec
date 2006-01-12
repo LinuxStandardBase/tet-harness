@@ -47,7 +47,7 @@ PreReq: lsb-core-amd64 >= 3.1
 %description
 This is an LSB conforming package of the Test Environment Toolkit.
 This base package contains the tcc binary, shared objects for
-the C API, and tcm modules for the ksh, posix_sh, perl and xpg3sh
+the C API, and tcm modules for the ksh, posix_sh, perl, python and xpg3sh
 APIs, and supporting documentation.
 The Test Environment Toolkit is a standard framework for
 developing and running test cases.
