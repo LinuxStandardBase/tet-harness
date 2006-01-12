@@ -9,7 +9,7 @@ Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.6b
-Release: 10.lsb%{LSBRelease}
+Release: 11.lsb%{LSBRelease}
 Source0: tet3.6b-lite.unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
@@ -21,27 +21,27 @@ AutoReqProv: no
 
 
 # comment this out, since it often means that the
-# package cannot be installed , the value 3.1 is for LSB 3.1
+# package cannot be installed , the value 3.0 is for LSB 3.0
 %ifarch i386 i486 i585 i686 athlon
-PreReq: lsb-core-ia32 >= 3.1
+PreReq: lsb-core-ia32 >= 3.0
 %endif
 %ifarch ia64
-PreReq: lsb-core-ia64 >= 3.1
+PreReq: lsb-core-ia64 >= 3.0
 %endif
 %ifarch ppc
-PreReq: lsb-core-ppc32 >= 3.1
+PreReq: lsb-core-ppc32 >= 3.0
 %endif
 %ifarch ppc64
-PreReq: lsb-core-ppc64 >= 3.1
+PreReq: lsb-core-ppc64 >= 3.0
 %endif
 %ifarch s390
-PreReq: lsb-core-s390 >= 3.1
+PreReq: lsb-core-s390 >= 3.0
 %endif
 %ifarch s390x
-PreReq: lsb-core-s390x >= 3.1
+PreReq: lsb-core-s390x >= 3.0
 %endif
 %ifarch x86_64
-PreReq: lsb-core-amd64 >= 3.1
+PreReq: lsb-core-amd64 >= 3.0
 %endif
 
 %description
@@ -51,7 +51,7 @@ the C API, and tcm modules for the ksh, posix_sh, perl, python and xpg3sh
 APIs, and supporting documentation.
 The Test Environment Toolkit is a standard framework for
 developing and running test cases.
-This version for LSB 3.1.
+This version for LSB 3.0 and the later version.
 
 %prep
 
