@@ -1,23 +1,60 @@
-diff -uNr tet3-lite-3.6b~/src/scripts/tet_start.sh tet3-lite-3.6b/src/scripts/tet_start.sh
---- tet3-lite-3.6b~/src/scripts/tet_start.sh	2005-02-28 16:37:02.000000000 +0000
-+++ tet3-lite-3.6b/src/scripts/tet_start.sh	2005-02-28 16:37:12.000000000 +0000
-@@ -1,5 +1,5 @@
- # -START-UNIX-ONLY-
--#!/bin/ksh
-+#!/bin/sh
- # -END-UNIX-ONLY-
- # -START-WIN32-ONLY-
- : use the MKS shell
+diff -uNr tet3-lite-3.6b~/contrib/python_api/Makefile tet3-lite-3.6b/contrib/python_api/Makefile
+--- tet3-lite-3.6b~/contrib/python_api/Makefile	2004-11-06 00:28:15.000000000 +0800
++++ tet3-lite-3.6b/contrib/python_api/Makefile	2006-01-12 12:40:01.000000000 +0800
+@@ -34,18 +34,20 @@
+ #
+ ########################################################################
+ 
++include ../../src/defines.mk
+ TET_LIB_DIR	= $(TET_ROOT)/lib/tet3
+ TET_LIBS	= $(TET_LIB_DIR)/tcm.o $(TET_LIB_DIR)/libapi.a
+ PYTHON_INC	= /usr/include/python2.2
+ CC		= /usr/bin/gcc
+-CFLAGS		=  -D_POSIX_SOURCE -DNSIG=_NSIG -DTET_LITE
++#CFLAGS		=  -D_POSIX_SOURCE -DNSIG=_NSIG -DTET_LITE
++CFLAGS		=  -D_POSIX_SOURCE -DTET_LITE $(COPTS)
+ LDFLAGS		= -shared
+ PYTET_LIB	= _pytet.so
+ 
+ all:		$(PYTET_LIB)
+ 
+ pytet_wrap.o:	pytet_wrap.c
+-		$(CC) -I$(PYTHON_INC) -c $<
++		$(CC) $(CFLAGS) -I$(PYTHON_INC) -c $<
+ 
+ $(PYTET_LIB):	pytet_wrap.o
+ 		$(CC) $(LDFLAGS) -o $@ $< $(TET_LIBS)
+diff -uNr tet3-lite-3.6b~/contrib/python_api/pytet_wrap.c tet3-lite-3.6b/contrib/python_api/pytet_wrap.c
+--- tet3-lite-3.6b~/contrib/python_api/pytet_wrap.c	2004-11-06 00:28:16.000000000 +0800
++++ tet3-lite-3.6b/contrib/python_api/pytet_wrap.c	2006-01-12 00:02:12.000000000 +0800
+@@ -1253,15 +1253,13 @@
+ static PyObject *_wrap_tet_vprintf(PyObject *self, PyObject *args) {
+     PyObject *resultobj;
+     char *arg1 ;
+-    va_list arg2 ;
+     int result;
+     va_list *argp2 ;
+     PyObject * obj1 = 0 ;
+     
+     if(!PyArg_ParseTuple(args,(char *)"sO:tet_vprintf",&arg1,&obj1)) goto fail;
+     if ((SWIG_ConvertPtr(obj1,(void **) &argp2, SWIGTYPE_p_va_list,SWIG_POINTER_EXCEPTION) == -1)) SWIG_fail;
+-    arg2 = *argp2; 
+-    result = (int)tet_vprintf(arg1,arg2);
++    result = (int)tet_vprintf(arg1,*argp2);
+     
+     resultobj = PyInt_FromLong((long)result);
+     return resultobj;
 diff -uNr tet3-lite-3.6b~/profile.skeleton tet3-lite-3.6b/profile.skeleton
---- tet3-lite-3.6b~/profile.skeleton	1970-01-01 01:00:00.000000000 +0100
-+++ tet3-lite-3.6b/profile.skeleton	2005-03-02 11:59:09.119785960 +0000
-@@ -0,0 +1,32 @@
+--- tet3-lite-3.6b~/profile.skeleton	1970-01-01 08:00:00.000000000 +0800
++++ tet3-lite-3.6b/profile.skeleton	2006-01-11 20:23:52.000000000 +0800
+@@ -0,0 +1,33 @@
 +# profile for building tet3
 +HOME=`pwd`
 +echo Unconfigured
 +PATH=$TET_ROOT/bin:$PATH
 +MANPATH=$MANPATH:$TET_ROOT/man
-+export TET_ROOT PATH MANPATH
++PYTHONPATH=$TET_ROOT/lib/python
++export TET_ROOT PATH MANPATH PYTHONPATH
 +
 +# useful shell functions for TET
 +tccb()
@@ -44,9 +81,9 @@ diff -uNr tet3-lite-3.6b~/profile.skeleton tet3-lite-3.6b/profile.skeleton
 +{
 +(cd $HOME/results; vres `ls -d 0* | tail -1`/journal | less)
 +}
-diff -ur tet3-lite-3.6b~/src/defines/linux.mk tet3-lite-3.6b/src/defines/linux.mk
---- tet3-lite-3.6b~/src/defines/linux.mk	2005-03-02 11:56:53.000000000 +0000
-+++ tet3-lite-3.6b/src/defines/linux.mk	2005-03-03 12:00:12.287386536 +0000
+diff -uNr tet3-lite-3.6b~/src/defines/linux.mk tet3-lite-3.6b/src/defines/linux.mk
+--- tet3-lite-3.6b~/src/defines/linux.mk	2002-05-14 18:40:31.000000000 +0800
++++ tet3-lite-3.6b/src/defines/linux.mk	2006-01-12 12:36:45.000000000 +0800
 @@ -91,7 +91,12 @@
  CC = gcc
  #
@@ -60,15 +97,30 @@ diff -ur tet3-lite-3.6b~/src/defines/linux.mk tet3-lite-3.6b/src/defines/linux.m
  #
  # CDEFS and COPTS - options that are always passed to cc when compiling
  # program and "ordinary" library files
-@@ -101,7 +106,11 @@
+@@ -101,7 +106,15 @@
  # and usually defines NSIG (the highest signal number plus one)
  # COPTS is used to specify other options (e.g.: -O)
  CDEFS = -I$(INC) -I$(DINC)
+-COPTS = -O
 +ifeq ($(BUILD_ARCH),x86_64)
 +COPTS = -O -fPIC
 +else
- COPTS = -O
++  ifeq ($(BUILD_ARCH),ia64)
++  COPTS = -O -fPIC
++  else
++  COPTS = -O
++  endif
 +endif
  #
  # LDFLAGS - options that are always passed to cc when linking
  LDFLAGS =
+diff -uNr tet3-lite-3.6b~/src/scripts/tet_start.sh tet3-lite-3.6b/src/scripts/tet_start.sh
+--- tet3-lite-3.6b~/src/scripts/tet_start.sh	2002-05-14 18:40:39.000000000 +0800
++++ tet3-lite-3.6b/src/scripts/tet_start.sh	2006-01-11 20:24:07.000000000 +0800
+@@ -1,5 +1,5 @@
+ # -START-UNIX-ONLY-
+-#!/bin/ksh
++#!/bin/sh
+ # -END-UNIX-ONLY-
+ # -START-WIN32-ONLY-
+ : use the MKS shell
