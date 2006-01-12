@@ -9,7 +9,7 @@ Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.6b
-Release: 9.lsb%{LSBRelease}
+Release: 10.lsb%{LSBRelease}
 Source0: tet3.6b-lite.unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
@@ -71,8 +71,33 @@ fi
 
 %build
 
+python 2>&1 > .PYTHONINFO <<END
+import sys
+print sys.path[2]
+END
+
+PYTHONLIB=`cat .PYTHONINFO`
+rm -f .PYTHONINFO
+
+PYTHONVERSION=`echo $PYTHONLIB | cut -d "/" -f 4 `
+
+if [ ! -d $PYTHONLIB ]
+then
+	echo "Can not find the python library in your system"
+	exit 1
+fi
+
+export TET_ROOT=`pwd`
+
 sh ./configure -t lite
-cd src && make
+cd src && make && make install
+cd ..
+
+mv contrib/python_api/Makefile contrib/python_api/Makefile.old
+sed "s@/usr/include/python2.2@/usr/include/$PYTHONVERSION@g" contrib/python_api/Makefile.old > contrib/python_api/Makefile
+rm -f contrib/python_api/Makefile.old
+
+cd contrib/python_api && make
 
 %install
 
@@ -85,6 +110,10 @@ mkdir -p $RPM_BUILD_ROOT/opt/lsb-tet3-lite/doc
 cp  README.FIRST Artistic Licence $RPM_BUILD_ROOT/opt/lsb-tet3-lite/doc/
 install -m 555 contrib/scripts/vres $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/vres
 install -m 555 contrib/scripts/dres $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/dres
+mkdir -p $RPM_BUILD_ROOT/opt/lsb-tet3-lite/lib/python
+install -m 644 contrib/python_api/README $RPM_BUILD_ROOT/opt/lsb-tet3-lite/lib/python/README
+install -m 755 contrib/python_api/pytet.py $RPM_BUILD_ROOT/opt/lsb-tet3-lite/lib/python/pytet.py
+install -m 755 contrib/python_api/_pytet.so $RPM_BUILD_ROOT/opt/lsb-tet3-lite/lib/python/_pytet.so
 
 sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/lsb-tet3-lite@" profile.skeleton > $RPM_BUILD_ROOT/opt/lsb-tet3-lite/profile 
 
@@ -108,6 +137,9 @@ chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-t
 /opt/lsb-tet3-lite/lib/perl/api.pl
 /opt/lsb-tet3-lite/lib/perl/tcm.pl
 /opt/lsb-tet3-lite/lib/perl/README
+/opt/lsb-tet3-lite/lib/python/README
+/opt/lsb-tet3-lite/lib/python/pytet.py
+/opt/lsb-tet3-lite/lib/python/_pytet.so
 /opt/lsb-tet3-lite/lib/posix_sh/tcm.sh
 /opt/lsb-tet3-lite/lib/posix_sh/tetapi.sh
 /opt/lsb-tet3-lite/lib/tet3/libapi_s.so
@@ -170,22 +202,32 @@ framework for developing and running test cases.
 /opt/lsb-tet3-lite/lib/tet3/Cthrtcmchild_s.o
 %doc /opt/lsb-tet3-lite/man/man3
 
+%clean
+# uncomment later. leave in now for speed
+if [ -e "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]; then 
+    rm -rf ${RPM_BUILD_ROOT}
+fi
 
 %post
 
 # put out a message 
 
 echo 
-echo "To use the TET-lite package set your TET_ROOT, PATH and MANPATH environment"
+echo "To use the TET-lite package set your TET_ROOT, PATH, MANPATH and PYTHONPATH environment"
 echo "variables, for example:"
 echo "   export TET_ROOT=/opt/lsb-tet3-lite"
 echo "   export PATH=\$PATH:\$TET_ROOT/bin"
 echo "   export MANPATH=\$MANPATH:\$TET_ROOT/man"
+echo "   export PYTHONPATH=\$TET_ROOT/lib/python"
 echo "See /opt/lsb-tet3-lite/profile for sample profile additions"
 echo
 
 
 %changelog
+
+* Wed Jan 11 2006  Rui Feng 
+
+Add the support for python api  
 
 * Thu Jan 05 2006  Rui Feng 
 

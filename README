@@ -15,7 +15,7 @@ This is an LSB conforming package of the Test Environment Toolkit.
 This base package contains the tcc binary and supporting documentation.
 The Test Environment Toolkit is a standard framework for
 developing and running test cases.
-This version for LSB 3.0.
+This version for LSB 3.1.
 
 The package name and path are registered with LANANA
 

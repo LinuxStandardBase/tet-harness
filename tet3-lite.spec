@@ -2,7 +2,7 @@
 Summary: Test Environment Toolkit
 Name: tet3-lite
 Version: 3.6b
-Release: 8
+Release: 10
 Source0: tet3.6b-lite.unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Patch0: tet3.6b-lite.patch
@@ -25,8 +25,25 @@ developing and running test cases.
 
 %build
 
+python -V > .PYTHONINFO 2>&1
+PYTHONVERSION=`cat .PYTHONINFO | cut -d " " -f 2 | cut -d "." -f 1,2`
+echo $PYTHONVERSION
+rm -f .PYTHONINFO
+
+if [ ! -d /usr/lib/python$PYTHONVERSION ]
+then
+        echo "Can not find the python library in your system"
+        exit 1
+fi
+
 sh ./configure -t lite
 cd src && make
+cd ..
+
+mv contrib/python_api/Makefile contrib/python_api/Makefile.old
+sed "s@/usr/include/python2.2@/usr/include/python2.3@g" contrib/python_api/Makefile.old > contrib/python_api/Makefile
+rm -f contrib/python_api/Makefile.old
+cd contrib/python_api && make
 
 %install
 
@@ -39,6 +56,10 @@ mkdir -p $RPM_BUILD_ROOT/opt/tet3-lite/doc
 cp  README.FIRST Artistic Licence $RPM_BUILD_ROOT/opt/tet3-lite/doc/
 install -m 555 contrib/scripts/vres $RPM_BUILD_ROOT/opt/tet3-lite/bin/vres
 install -m 555 contrib/scripts/dres $RPM_BUILD_ROOT/opt/tet3-lite/bin/dres
+mkdir -p $RPM_BUILD_ROOT/opt/tet3-lite/lib/python
+install -m 644 contrib/python_api/README $RPM_BUILD_ROOT/opt/tet3-lite/lib/python/README
+install -m 755 contrib/python_api/pytet.py $RPM_BUILD_ROOT/opt/tet3-lite/lib/python/pytet.py
+install -m 755 contrib/python_api/_pytet.so $RPM_BUILD_ROOT/opt/tet3-lite/lib/python/_pytet.so
 
 sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/tet3-lite@" profile.skeleton > $RPM_BUILD_ROOT/opt/tet3-lite/profile 
 
@@ -55,6 +76,9 @@ sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/tet3-lite@" profile.sk
 /opt/tet3-lite/lib/perl/api.pl
 /opt/tet3-lite/lib/perl/tcm.pl
 /opt/tet3-lite/lib/perl/README
+/opt/tet3-lite/lib/python/README
+/opt/tet3-lite/lib/python/pytet.py
+/opt/tet3-lite/lib/python/_pytet.so
 /opt/tet3-lite/lib/posix_sh/tcm.sh
 /opt/tet3-lite/lib/posix_sh/tetapi.sh
 /opt/tet3-lite/lib/tet3/libapi_s.so
@@ -77,11 +101,12 @@ sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/tet3-lite@" profile.sk
 # put out a message 
 
 echo 
-echo "To use the TET-lite package set your TET_ROOT, PATH and MANPATH environment"
+echo "To use the TET-lite package set your TET_ROOT, PATH, MANPATH and PYTHONPATH environment"
 echo "variables, for example:"
 echo "   export TET_ROOT=/opt/tet3-lite"
 echo "   export PATH=\$PATH:\$TET_ROOT/bin"
 echo "   export MANPATH=\$MANPATH:\$TET_ROOT/man"
+echo "   export PYTHONPATH=\$TET_ROOT/lib/python"
 echo "See /opt/tet3-lite/profile for sample profile additions"
 echo
 
@@ -158,6 +183,10 @@ framework for developing and running test cases.
 
 #----------------------------------------
 %changelog
+
+* Wed Jan 11 2006  Rui Feng                         
+
+Add the support for python api 
 
 * Tue Jun 07 2005  Andrew Josey
 
