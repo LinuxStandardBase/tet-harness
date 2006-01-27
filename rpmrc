@@ -4,6 +4,8 @@ macrofiles:	/usr/lib/rpm/macros:./rpmmacros
 buildarchtranslate: i686 i486
 buildarchtranslate: i586 i486
 buildarchtranslate: i386 i486
+buildarchtranslate: pentium3 i486
+buildarchtranslate: pentium4 i486
 buildarchtranslate: athlon i486
 buildarchtranslate: k6 i486
 
