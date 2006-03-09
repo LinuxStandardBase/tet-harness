@@ -1,3 +1,13 @@
+2006-01-26	Marvin Heffler <heffler_at_us.ibm.com>
+	* rpmrc
+	   add archtranslate entries for some systems that return pentium3
+	   or pentium4 for the architecture
+
+2006-01-14	Mats Wichmann <mats.d.wichmann_at_intel.com>
+	* support/tjreport.1
+	  support/tjreport
+	   Add support for new VSX_NAME standard (bug 986); manpage cleanup
+
 2006-01-04	Rui Feng <fengrui_at_cn.ibm.com>
 	* Makefile
 	   correct the setting of RPM_BUILD_ARCH
@@ -137,4 +147,4 @@
 	* support/tjreport
 	   Initial version
 
-1137074577
+1141870716
