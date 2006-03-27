@@ -1,3 +1,15 @@
+2006-03-27	Rui Feng <fengrui_at_cn.ibm.com>
+	* tet3.7-lite.patch
+	  Makefile
+	  lsb-tet3-lite.spec
+	  tet3-lite.spec
+	  tet3.7-lite-lsb.patch
+	   update to tet3.7
+
+2006-03-09	Rui Feng <fengrui_at_cn.ibm.com>
+	* ChangeLog
+	   rsync
+
 2006-01-26	Marvin Heffler <heffler_at_us.ibm.com>
 	* rpmrc
 	   add archtranslate entries for some systems that return pentium3
@@ -147,4 +159,4 @@
 	* support/tjreport
 	   Initial version
 
-1141870716
+1143460972
