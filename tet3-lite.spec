@@ -1,11 +1,11 @@
 # Non LSB Conforming version
 Summary: Test Environment Toolkit
 Name: tet3-lite
-Version: 3.6b
-Release: 10
-Source0: tet3.6b-lite.unsup.src.tgz
+Version: 3.7
+Release: 1
+Source0: tet3.7-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
-Patch0: tet3.6b-lite.patch
+Patch0: tet3.7-lite.patch
 License: Artistic
 Group: Development/Tools
 Buildroot: %{_builddir}/%{name}-root
@@ -19,7 +19,7 @@ developing and running test cases.
 
 %prep
 
-%setup -q -a1
+%setup  -cn tet3-lite-3.7 -q -a1
 %patch -p1
 
 
@@ -36,8 +36,10 @@ then
         exit 1
 fi
 
+export TET_ROOT=`pwd`
+
 sh ./configure -t lite
-cd src && make
+cd src && make && make install
 cd ..
 
 mv contrib/python_api/Makefile contrib/python_api/Makefile.old
@@ -85,6 +87,7 @@ sed -e "/^HOME=/d" -e "s@^echo Unconfigured@TET_ROOT=/opt/tet3-lite@" profile.sk
 /opt/tet3-lite/lib/tet3/libthrapi_s.so
 /opt/tet3-lite/lib/xpg3sh/tcm.sh
 /opt/tet3-lite/lib/xpg3sh/tetapi.sh
+/opt/tet3-lite/lib/grw/example.css
 /opt/tet3-lite/profile
 
 %dir /opt/tet3-lite
@@ -183,6 +186,10 @@ framework for developing and running test cases.
 
 #----------------------------------------
 %changelog
+
+* Mon Mar 27 2006 Rui Feng
+
+Update to tet3.7
 
 * Wed Jan 11 2006  Rui Feng                         
 

@@ -20,9 +20,9 @@
 
 PACKAGE=tet3-lite
 LSB_PACKAGE=lsb-tet3-lite
-VERSION=3.6b
+VERSION=3.7
 LSBRelease=3
-RELEASE=11
+RELEASE=1
 LSB_RELEASE=$(RELEASE).lsb$(LSBRelease)
 
 FULL_PACKAGE_NAME=$(PACKAGE)-$(VERSION)
@@ -38,16 +38,16 @@ LSB_TET_SOURCE_NAME=$(LSB_FULL_PACKAGE_NAME)-$(LSB_RELEASE).src.rpm
 LSB_TET_BINARY_NAME=$(LSB_FULL_PACKAGE_NAME)-$(LSB_RELEASE).$(RPM_BUILD_ARCH).rpm
 LSB_TET_DEVEL_BINARY_NAME=$(LSB_PACKAGE)-devel-$(VERSION)-$(LSB_RELEASE).$(RPM_BUILD_ARCH).rpm
 
-SOURCE1	=	tet3.6b-lite.unsup.src.tgz
+SOURCE1	=	tet3.7-unsup.src.tgz
 SOURCE2	=	tet3-lite-manpages-v1.1.tgz
-PATCH1	=	tet3.6b-lite-lsb.patch
+PATCH1	=	tet3.7-lite-lsb.patch
 SUPPORT =	support.tgz
 SOURCE3 =	$(SUPPORT)
 UPSTREAMSOURCES = $(SOURCE1) $(SOURCE2)
 TETURL	=	http://www.opengroup.org/infosrv/TET/TET3/
 
 # this patch for building regular nonlsb tet packages
-TPATCH1	=	tet3.6b-lite.patch
+TPATCH1	=	tet3.7-lite.patch
 
 PWD=$(shell pwd)
 
