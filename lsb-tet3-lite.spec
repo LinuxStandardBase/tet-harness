@@ -8,12 +8,12 @@ Summary: Test Environment Toolkit
 Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
-Version: 3.6b
-Release: 11.lsb%{LSBRelease}
-Source0: tet3.6b-lite.unsup.src.tgz
+Version: 3.7
+Release: 1.lsb%{LSBRelease}
+Source0: tet3.7-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
-Patch0: tet3.6b-lite-lsb.patch
+Patch0: tet3.7-lite-lsb.patch
 License: Artistic
 Group: Development/Tools
 Buildroot: %{_builddir}/%{name}-root
@@ -65,7 +65,7 @@ if [ ! -x /opt/lsb/bin/lsbc++ ] ; then
     exit 1
 fi
 
-%setup -n tet3-lite-3.6b -q -a1
+%setup -cn tet3-lite-3.7 -q -a1
 %patch -p1
 
 
@@ -146,6 +146,7 @@ chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-t
 /opt/lsb-tet3-lite/lib/tet3/libthrapi_s.so
 /opt/lsb-tet3-lite/lib/xpg3sh/tcm.sh
 /opt/lsb-tet3-lite/lib/xpg3sh/tetapi.sh
+/opt/lsb-tet3-lite/lib/grw/example.css
 /opt/lsb-tet3-lite/profile
 %dir /opt/lsb-tet3-lite
 %dir /opt/lsb-tet3-lite/man
@@ -224,6 +225,10 @@ echo
 
 
 %changelog
+
+* Mon Mar 27 2006 Rui Feng
+
+Update to tet3.7
 
 * Wed Jan 11 2006  Rui Feng 
 
