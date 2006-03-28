@@ -24,6 +24,26 @@ diff -uNr tet3-lite-3.7.orig/contrib/python_api/Makefile tet3-lite-3.7/contrib/p
  
  $(PYTET_LIB):	pytet_wrap.o
  		$(CC) $(LDFLAGS) -o $@ $< $(TET_LIBS)
+diff -uNr tet3-lite-3.7.orig/contrib/python_api/pytet_wrap.c tet3-lite-3.7/contrib/python_api/pytet_wrap.c
+--- tet3-lite-3.7.orig/contrib/python_api/pytet_wrap.c	2004-05-21 15:24:51.000000000 +0800
++++ tet3-lite-3.7/contrib/python_api/pytet_wrap.c	2006-03-28 22:05:23.000000000 +0800
+@@ -1253,15 +1253,13 @@
+ static PyObject *_wrap_tet_vprintf(PyObject *self, PyObject *args) {
+     PyObject *resultobj;
+     char *arg1 ;
+-    va_list arg2 ;
+     int result;
+     va_list *argp2 ;
+     PyObject * obj1 = 0 ;
+     
+     if(!PyArg_ParseTuple(args,(char *)"sO:tet_vprintf",&arg1,&obj1)) goto fail;
+     if ((SWIG_ConvertPtr(obj1,(void **) &argp2, SWIGTYPE_p_va_list,SWIG_POINTER_EXCEPTION) == -1)) SWIG_fail;
+-    arg2 = *argp2; 
+-    result = (int)tet_vprintf(arg1,arg2);
++    result = (int)tet_vprintf(arg1, *argp2);
+     
+     resultobj = PyInt_FromLong((long)result);
+     return resultobj;
 diff -uNr tet3-lite-3.7.orig/profile.skeleton tet3-lite-3.7/profile.skeleton
 --- tet3-lite-3.7.orig/profile.skeleton	1970-01-01 08:00:00.000000000 +0800
 +++ tet3-lite-3.7/profile.skeleton	2006-03-24 11:18:44.000000000 +0800
