@@ -8,9 +8,12 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.19 $
+# This is $Revision: 1.20 $
 #
 # $Log: tjreport,v $
+# Revision 1.20  2006/04/20 21:01:44  mats
+# Change waiver file location
+#
 # Revision 1.19  2006/01/14 14:33:10  mats
 # Add support for new VSX_NAME standard (bug 986); manpage cleanup
 #
@@ -81,6 +84,10 @@
 # Initial version
 #
 #
+
+# change this to change where waivers are fetched from
+
+my $waiversite = "http://freestandards.org/cert/lsb/waivers";
 
 use strict;
 use Getopt::Std;
@@ -564,8 +571,8 @@ sub LoadNetWaiverFile($) {
        return $waived;
     }
 
-    print "Loading networked waivers information -- file: http://www.opengroup.org/infosrv/lsb/waivers/$filename\n";
-    $ret = system "wget -nv --output-document=waivers-$filename http://www.opengroup.org/infosrv/lsb/waivers/$filename 2>&1 >/dev/null";
+    print "Loading networked waivers information -- file: $waiversite/$filename\n";
+    $ret = system "wget -nv --output-document=waivers-$filename $waiversite/$filename 2>&1 >/dev/null";
     if ( $ret != 0 )
     {
     	print "Warning, wget was unable to locate network waivers to retrieve..\n";
