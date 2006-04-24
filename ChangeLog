@@ -1,3 +1,17 @@
+2006-04-24	Rui Feng <fengrui_at_cn.ibm.com>
+	* lsb-tet3-lite.spec
+	  Makefile
+	   update release number
+
+2006-04-20	Mats Wichmann <mats.d.wichmann_at_intel.com>
+	* support/tjreport
+	   Change waiver file location
+
+2006-03-28	Rui Feng <fengrui_at_cn.ibm.com>
+	* tet3.7-lite.patch
+	  tet3.7-lite-lsb.patch
+	   update the patch related to pytet_wrap.c
+
 2006-03-27	Rui Feng <fengrui_at_cn.ibm.com>
 	* tet3.7-lite.patch
 	  Makefile
@@ -159,4 +173,4 @@
 	* support/tjreport
 	   Initial version
 
-1143460972
+1145889778
