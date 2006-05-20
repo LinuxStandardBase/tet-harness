@@ -1,3 +1,9 @@
+2006-05-19	Marvin Heffler <heffler_at_us.ibm.com>
+        * lsb-tet3-lite.spec
+	  tet3.7-lite-lsb.ptach
+          Makefile
+	   add alignment of jmpbuf to fix sporadic ia64 problems
+
 2006-04-24	Rui Feng <fengrui_at_cn.ibm.com>
 	* lsb-tet3-lite.spec
 	  Makefile
