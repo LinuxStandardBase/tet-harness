@@ -144,3 +144,15 @@ diff -uNr tet3-lite-3.7.orig/src/scripts/tet_start.sh tet3-lite-3.7/src/scripts/
  # -END-UNIX-ONLY-
  # -START-WIN32-ONLY-
  : use the MKS shell
+diff -uNr tet3-lite-3.7.orig/src/tet3/tcm/tcm_main.c tet3-lite-3.7/src/tet3/tcm/tcm_main.c
+--- tet3-lite-3.7.orig/src/tet3/tcm/tcm_main.c	2006-05-16 17:20:28.000000000 -0700
++++ tet3-lite-3.7/src/tet3/tcm/tcm_main.c	2006-05-16 17:20:51.000000000 -0700
+@@ -232,7 +232,7 @@
+ 
+ static	int	sigreset = 1;
+ static	int	signum;
+-static	sigjmp_buf skipjmp;
++static	sigjmp_buf __attribute__ ((aligned)) skipjmp;
+ 
+ #ifdef TET_THREADS
+ static	int	start_errno;
