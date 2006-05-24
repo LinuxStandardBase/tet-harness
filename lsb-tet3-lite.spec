@@ -9,7 +9,7 @@ Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.7
-Release: 3.lsb%{LSBRelease}
+Release: 4.lsb%{LSBRelease}
 Source0: tet3.7-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
@@ -225,6 +225,10 @@ echo
 
 
 %changelog
+
+* Wed May 24 2006 Marvin Heffler
+
+Remove jmpbuf alignment fix that is now fixed in lsb headers
 
 * Fri May 19 2006 Marvin Heffler
 
