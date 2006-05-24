@@ -1,3 +1,10 @@
+2006-05-24      Marvin Heffler <heffler_at_us.ibm.com>
+        * lsb-tet3-lite.spec
+          tet3.7-lite-lsb.patch
+          Makefile
+           Remove previous jmpbuf alignment fix because problem
+             was fixed in the lsb headers
+
 2006-05-19	Marvin Heffler <heffler_at_us.ibm.com>
         * lsb-tet3-lite.spec
 	  tet3.7-lite-lsb.ptach
