@@ -8,9 +8,12 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
-# This is $Revision: 1.20 $
+# This is $Revision: 1.21 $
 #
 # $Log: tjreport,v $
+# Revision 1.21  2006/06/13 12:33:51  mats
+# bug 1406 (and unrelated nearby comment cleanup)
+#
 # Revision 1.20  2006/04/20 21:01:44  mats
 # Change waiver file location
 #
@@ -189,13 +192,14 @@ sub GatherStats($) {
         }
         # elsif: what do we do if it doesn't match. Nothing?
 
-# for the .os sections need to double expected counts to allow
-# for macro versions.
+	# LSB-runtime-test only:
+	# for the .os sections need to double expected counts to allow
+	# for the macro versions.
         elsif ( $line =~ /^70\|.*total tests in (ANSI|POSIX|LSB|PTHR).os ([0-9]+)/ ) {
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
         }
-        elsif ( $line =~ /^70\|.*total tests in ([A-Za-z.0-9]+) ([0-9]+)/ ) {
+        elsif ( $line =~ /^70\|.*total tests in ([A-Za-z.0-9_-]+) ([0-9]+)/ ) {
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
         }
 
