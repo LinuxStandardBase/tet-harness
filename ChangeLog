@@ -1,3 +1,21 @@
+2006-06-13	Mats Wichmann <mats.d.wichmann_at_intel.com>
+	* support/tjreport
+	   bug 1406 (and unrelated nearby comment cleanup)
+
+2006-05-24	Marvin Heffler <heffler_at_us.ibm.com>
+	* tet3.7-lite-lsb.patch
+	  Makefile
+	  lsb-tet3-lite.spec
+	   remove jmpbuf alignment patch to tet since it is now fixed in
+	   lsb headers
+
+2006-05-19	Marvin Heffler <heffler_at_us.ibm.com>
+	* tet3.7-lite-lsb.patch
+	  Makefile
+	  lsb-tet3-lite.spec
+	   add jmpbuf alignment patch to lsb patch file to fix sporadic
+	   ia64 problems
+
 2006-05-24      Marvin Heffler <heffler_at_us.ibm.com>
         * lsb-tet3-lite.spec
           tet3.7-lite-lsb.patch
@@ -186,4 +204,4 @@
 	* support/tjreport
 	   Initial version
 
-1145889778
+1150996816
