@@ -9,7 +9,7 @@ Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.7
-Release: 4.lsb%{LSBRelease}
+Release: 5.lsb%{LSBRelease}
 Source0: tet3.7-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
