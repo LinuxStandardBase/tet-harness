@@ -1,3 +1,8 @@
+2006-06-28	Rui Feng <fengrui_at_cn.ibm.com>
+	* lsb-tet3-lite.spec
+	  Makefile
+	   bump the release number
+
 2006-06-13	Mats Wichmann <mats.d.wichmann_at_intel.com>
 	* support/tjreport
 	   bug 1406 (and unrelated nearby comment cleanup)
@@ -204,4 +209,4 @@
 	* support/tjreport
 	   Initial version
 
-1150996816
+1151485883
