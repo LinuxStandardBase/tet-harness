@@ -127,6 +127,13 @@ my (%PFMap) = (
     "UNKNOWN"     => "FAIL"
 );
 
+my (%ArchMap) = (
+    "(i386)" => "IA32",
+    "(i486)" => "IA32",
+    "(i586)" => "IA32",
+    "(i686)" => "IA32"
+);
+
 my ($VerboseSummary) = 0;
 
 # Analyses one journal file to get statistics on pass/failure
@@ -180,6 +187,7 @@ sub GatherStats($) {
         # there are two formats for this during a transitional period
         # "LSB Certification Version" obsolete in favor of a test suite key
         elsif ( $line =~ /^30\|.*VSX_NAME=LSB Certification Version (.*) (.*)$/ ) {
+            $stats->{TEST_NAME} = "runtime";
             $stats->{TEST_VERS} = $1;
             $stats->{TEST_ARCH} = $2;
             next;
@@ -246,6 +254,13 @@ sub GatherStats($) {
     }
 
     close(JFILE);
+
+    if ( defined($stats->{TEST_ARCH}) ) {
+        if ( defined($ArchMap{$stats->{TEST_ARCH}}) ) {
+            $stats->{TEST_ARCH} = $ArchMap{$stats->{TEST_ARCH}};
+        }
+    }
+
     return $stats;
 }
 
@@ -336,6 +351,8 @@ sub PrintSummary($$$) {
     my ($waivers)    = shift;
 
     my ($testState);
+    my ($testSuite);
+    my ($testArch);
 
     my ($testName);
     my ($testNum);
@@ -348,17 +365,18 @@ sub PrintSummary($$$) {
             keys %{ $stats->{TESTS}{$testName} } )
         {
             $secondCount++;
+            $testState = $stats->{TESTS}{$testName}{$testNum}{STATE};
 
             #      print "$testName $testNum\n";
             if (
                 (
-                    $PFMap{ $stats->{TESTS}{$testName}{$testNum}{STATE} } eq
+                    $PFMap{ $testState } eq
                     "FAIL"
                 )
                 || $isDetailed
               )
             {
-                print "$testName $testNum $stats->{TESTS}{$testName}{$testNum}{STATE}";
+                print "$testName $testNum $testState";
                 if ( defined($waivers) && $waivers->{"$testName-$testNum"} ) {
                     print " (WAIVED)";
                     $waived++;
@@ -366,6 +384,17 @@ sub PrintSummary($$$) {
                 print "\n";
                 if ($VerboseSummary) {
                     print "  $stats->{TESTS}{$testName}{$testNum}{INFO}";
+                    if ( defined( $stats->{TEST_NAME} ) ) {
+                        $testSuite = $stats->{TEST_NAME};
+                        if ( defined( $stats->{TEST_ARCH} ) ) {
+                            $testArch = $stats->{TEST_ARCH};
+                        } else {
+                            $testArch = "UNKNOWN";
+                        }
+
+                        print "  URL: http://developer.freestandards.org/lsbchk?suite=$testSuite&arch=$testArch&testcase=$testName&tpnum=$testNum&result=$testState\n"
+                    }
+                    print "\n";
                 }
             }
         }
