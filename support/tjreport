@@ -187,7 +187,6 @@ sub GatherStats($) {
         # there are two formats for this during a transitional period
         # "LSB Certification Version" obsolete in favor of a test suite key
         elsif ( $line =~ /^30\|.*VSX_NAME=LSB Certification Version (.*) (.*)$/ ) {
-            $stats->{TEST_NAME} = "runtime";
             $stats->{TEST_VERS} = $1;
             $stats->{TEST_ARCH} = $2;
             next;
@@ -198,6 +197,15 @@ sub GatherStats($) {
             $stats->{TEST_ARCH} = $3;
             next;
         }
+
+        # detect runtime and C++ a different way
+        elsif ( $line =~ /^30\|.*TEST_PACKAGES=LSB\-C\+\+/ ) {
+            $stats->{TEST_NAME} = "libstdcpp";
+        }
+        elsif ( $line =~ /^30\|.*TEST_PACKAGES=.*VSX-PCTS/ ) {
+            $stats->{TEST_NAME} = "runtime";
+        }
+
         # elsif: what do we do if it doesn't match. Nothing?
 
 	# LSB-runtime-test only:
