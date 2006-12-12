@@ -8,6 +8,11 @@
 #
 # 21/5/2001 Chris Yeoh, IBM
 #
+# Post-CVS changelog:
+#
+# 2006-11-20 Jeff Licquia <licquia@freestandards.org>
+#            Add Developer Network URL to tjreport -v output.
+#
 # This is $Revision: 1.21 $
 #
 # $Log: tjreport,v $
