@@ -104,7 +104,7 @@ then
 	exit 1
 fi
 
-if [ ! -d $PYTHONINCLUDE/Python.h ]
+if [ ! -f $PYTHONINCLUDE/Python.h ]
 then
 	echo "Can not find the python header (Python.h) in $PYTHONINCLUDE on your system"
 	exit 1
