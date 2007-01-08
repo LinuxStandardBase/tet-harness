@@ -243,6 +243,12 @@ echo
 * Mon Jan  8 2007 Stew Benedict
 - Remove dependence on absolute path in case lsbcc is somewhere else
 
+* Fri Dec 22 2006 Stew Benedict
+- Add -f (show FIP), -n (no waiver from network) options
+- Add -l (no cached waiver)
+- Fail more gracefully if we cannot read/write the waiver file
+- Rework waiver code a bit to cache waivers in ~/.tjreport
+
 * Tue Dec 12 2006 Jeff Licquia
 - Add Developer Network URL to tjreport -v output.
 
