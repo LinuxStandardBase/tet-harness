@@ -24,26 +24,42 @@ developing and running test cases.
 
 
 %build
+# We have to play a little dance for the Python API. We do the stuff
+# that can indicate the build will fail first
+# if PYTHONPATH is set during the build, the location of the desired
+# value in sys.path may be different
+unset PYTHONPATH
 
-python -V > .PYTHONINFO 2>&1
-PYTHONVERSION=`cat .PYTHONINFO | cut -d " " -f 2 | cut -d "." -f 1,2`
-echo $PYTHONVERSION
-rm -f .PYTHONINFO
+# use python itself to compute location of lib, header
+python 2>&1 > .PYTHONINFO <<END
+import sys
+print "PYTHONLIB="+sys.path[2]
+print "PYTHONINCLUDE="+sys.prefix+'/include/'+sys.path[2].split('/')[-1]
+END
+. ./.PYTHONINFO
 
-if [ ! -d /usr/lib/python$PYTHONVERSION ]
+if [ ! -d $PYTHONLIB ]
 then
-        echo "Can not find the python library in your system"
+	echo "Can not find the python library directory $PYTHONLIB on your system"
         exit 1
 fi
 
+if [ ! -f $PYTHONINCLUDE/Python.h ]
+then
+	echo "Can not find the python header (Python.h) in $PYTHONINCLUDE on your system"
+	exit 1
+fi
+
+# now build the main bits
 export TET_ROOT=`pwd`
 
 sh ./configure -t lite
 cd src && make && make install
 cd ..
 
+# and finish up building the Python bits
 mv contrib/python_api/Makefile contrib/python_api/Makefile.old
-sed "s@/usr/include/python2.2@/usr/include/python2.3@g" contrib/python_api/Makefile.old > contrib/python_api/Makefile
+sed "s@/usr/include/python2.2@$PYTHONINCLUDE@g" contrib/python_api/Makefile.old > contrib/python_api/Makefile
 rm -f contrib/python_api/Makefile.old
 cd contrib/python_api && make
 
