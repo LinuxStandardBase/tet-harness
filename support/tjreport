@@ -10,10 +10,16 @@
 #
 # Post-CVS changelog:
 #
-# 2006-11-20 Jeff Licquia <licquia@freestandards.org>
-#            Add Developer Network URL to tjreport -v output.
+# 2006-12-22 Stew Benedict
+# Bug 1440:
+# Add -f (show FIP), -n (no waiver from network) options
+# Add -l (no cached waiver)
+# Fail more gracefully if we cannot read/write the waiver file
+# Rework waiver code a bit to cache waivers in ~/.tjreport
 #
-# This is $Revision: 1.21 $
+# 2006-11-20 Jeff Licquia <licquia@freestandards.org>
+# Add Developer Network URL to tjreport -v output.
+#
 #
 # $Log: tjreport,v $
 # Revision 1.21  2006/06/13 12:33:51  mats
@@ -96,6 +102,7 @@
 # change this to change where waivers are fetched from
 
 my $waiversite = "http://freestandards.org/cert/lsb/waivers";
+my $waiverdir = $ENV{HOME} . "/.tjreport";
 
 use strict;
 use Getopt::Std;
@@ -140,6 +147,9 @@ my (%ArchMap) = (
 );
 
 my ($VerboseSummary) = 0;
+my ($NoNetWaiver) = 0;
+my ($NoCachedWaiver) = 0;
+my ($ShowFIP) = 0;
 
 # Analyses one journal file to get statistics on pass/failure
 #
@@ -248,11 +258,14 @@ sub GatherStats($) {
 
             $stats->{TESTS}{$testName}{$testNum}{STATE} = $testState;
 
-            if ( $PFMap{$testState} eq "PASS" ) {
+            if ( $PFMap{$testState} eq "PASS" || $PFMap{$testState} eq "FIP" ) {
                 $stats->{TOTAL_TESTS_PASSED}++;
             }
             else {
                 $stats->{TOTAL_TESTS_FAILED}++;
+                $stats->{TESTS}{$testName}{$testNum}{INFO} = $errorMessage;
+            }
+            if ( $PFMap{$testState} eq "FIP" ) {
                 $stats->{TESTS}{$testName}{$testNum}{INFO} = $errorMessage;
             }
         }
@@ -387,6 +400,9 @@ sub PrintSummary($$$) {
                     "FAIL"
                 )
                 || $isDetailed
+		|| ( $PFMap{ $stats->{TESTS}{$testName}{$testNum}{STATE} } eq "FIP"
+			&& $ShowFIP
+		)
               )
             {
                 print "$testName $testNum $testState";
@@ -617,16 +633,47 @@ sub LoadNetWaiverFile($) {
        return $waived;
     }
 
-    print "Loading networked waivers information -- file: $waiversite/$filename\n";
-    $ret = system "wget -nv --output-document=waivers-$filename $waiversite/$filename 2>&1 >/dev/null";
-    if ( $ret != 0 )
-    {
-    	print "Warning, wget was unable to locate network waivers to retrieve..\n";
-        return;
+    if (! -d $waiverdir) {
+        my $result = mkdir $waiverdir;
+	if ($result eq 0) {
+            warn "Cannot create $waiverdir\n";
+	    return $waived;
+	}
     }
 
-    die "Could not open waiver file waivers-$filename"
-      unless open( WAIVERFILE, "./waivers-$filename" );
+    if (! -w $waiverdir) {
+        warn "Cannot write to $waiverdir\n";
+	return $waived;
+    }
+
+    # bail if user asked to not access net
+    if ($NoNetWaiver) {
+        print "Networked waiver retrieval disabled...\n";
+    } else {
+        print "Checking networked waivers information -- file: $waiversite/$filename\n";
+        $ret = system "LC_ALL=C wget -N -o $waiverdir/wget.log -P $waiverdir $waiversite/$filename";
+        if ( $ret != 0 ) {
+    	    print "Warning, wget was unable to locate network waivers to retrieve..\n";
+            return;
+        }
+
+        my $no_change_str = "Server file no newer than local file";
+        my $no_change = system "grep -q \"$no_change_str\" $waiverdir/wget.log";
+        print "$no_change_str ...\n" if $no_change eq 0;
+    }
+
+    # bail if user asked to not used cached waivers
+    if ($NoCachedWaiver) {
+        print "Cached waiver retrieval disabled...\n";
+	return $waived;
+    }
+
+    if (! open( WAIVERFILE, "$waiverdir/$filename" )) {
+        warn "Could not open waiver file $waiverdir/$filename";
+        return $waived;
+    } else {
+        print "Using waiver file $waiverdir/$filename\n";
+    }
     my ($line);
     while ( defined( $line = <WAIVERFILE> ) ) {
         chomp($line);
@@ -645,17 +692,21 @@ sub LoadNetWaiverFile($) {
 
 my (%options);
 
-getopts( 'dhu:p:b:e:r:o:w:v', \%options );
+getopts( 'dfhlnu:p:b:e:r:o:w:v', \%options );
 
 if ( exists( $options{'h'} ) || ( $#ARGV != 0 && $#ARGV != 1 ) ) {
     print STDOUT <<"EOM"
-Usage: $0 [-h] [-d] [-v] [-w waiver_file] [-u username] [-p password] 
+Usage: $0 [-h] [-d] [-f] [-l] [-n] [-v]
+	  [-w waiver_file] [-u username] [-p password] 
 	  [-b db_name] [-o host] [-e vendor_name] [-r version] 
 	  journal [journal2]
 
     -h               Display Help
     -d               Display a detailed summary of test results. The
                      test result is shown even if the test passed
+    -f               Show FIP results
+    -l               Do not use locally cached waivers from network
+    -n               Do not download waivers from network
     -v               Verbose mode (show error messages)
     -w waiver file   Use waiver_file instead of fetching waivers from network
     -u username      Username for connection to Mysql db
@@ -696,6 +747,19 @@ if ( exists( $options{'b'} ) ) {
         { AutoCommit => 0 }
     );
     die "Could not connect to database\n" unless defined($dbh);
+}
+
+if ( exists( $options{'f'} ) ) {
+    $PFMap{FIP} = "FIP";
+    $ShowFIP = 1;
+}
+
+if ( exists( $options{'l'} ) ) {
+    $NoCachedWaiver = 1;
+}
+
+if ( exists( $options{'n'} ) ) {
+    $NoNetWaiver = 1;
 }
 
 if ( exists( $options{'v'} ) ) {

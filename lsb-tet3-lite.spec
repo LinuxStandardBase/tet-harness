@@ -9,7 +9,7 @@ Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: 3.7
-Release: 5.lsb%{LSBRelease}
+Release: 5.1.lsb%{LSBRelease}
 Source0: tet3.7-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
@@ -56,20 +56,35 @@ This version for LSB 3.0 and the later version.
 %prep
 
 if [ ! -x /opt/lsb/bin/lsbcc ] ; then
-    printf "lsbcc not found, required for compilation, aborting\n"
-    exit 1
+    LSBCC=`which lsbcc`
+    if [ ! -x "$LSBCC" ]; then
+      printf "lsbcc not found, required for compilation, aborting\n"
+      exit 1
+    fi
 fi
 
 if [ ! -x /opt/lsb/bin/lsbc++ ] ; then
-    printf "lsbc++ not found, required for compilation, aborting\n"
-    exit 1
+    LSBCPP=`which lsbc++`
+    if [ ! -x "$LSBCPP" ]; then
+      printf "lsbc++ not found, required for compilation, aborting\n"
+      exit 1
+    fi
 fi
 
 %setup -cn tet3-lite-3.7 -q -a1
 %patch -p1
+if [ -n "$LSBCC" ];then
+    sed -i "s|/opt/lsb/bin/lsbcc|$LSBCC|g" contrib/python_api/Makefile
+    sed -i "s|/opt/lsb/bin/lsbcc|$LSBCC|g" src/defines/linux.mk
+fi
+if [ -n "$LSBCPP" ];then
+    sed -i "s|/opt/lsb/bin/lsbc++|$LSBCPP|g" contrib/python_api/Makefile
+    sed -i "s|/opt/lsb/bin/lsbc++|$LSBCPP|g" src/defines/linux.mk
+fi
 
 
 %build
+unset PYTHONPATH
 
 python 2>&1 > .PYTHONINFO <<END
 import sys
@@ -225,54 +240,51 @@ echo
 
 
 %changelog
+* Mon Jan  8 2007 Stew Benedict
+- Remove dependence on absolute path in case lsbcc is somewhere else
+
+* Fri Dec 22 2006 Stew Benedict
+- Add -f (show FIP), -n (no waiver from network) options
+- Add -l (no cached waiver)
+- Fail more gracefully if we cannot read/write the waiver file
+- Rework waiver code a bit to cache waivers in ~/.tjreport
+
+* Tue Dec 12 2006 Jeff Licquia
+- Add Developer Network URL to tjreport -v output.
 
 * Wed May 24 2006 Marvin Heffler
-
-Remove jmpbuf alignment fix that is now fixed in lsb headers
+- Remove jmpbuf alignment fix that is now fixed in lsb headers
 
 * Fri May 19 2006 Marvin Heffler
-
-Add alignment of jmpbuf to fix sporadic ia64 problems
+- Add alignment of jmpbuf to fix sporadic ia64 problems
 
 * Mon Mar 27 2006 Rui Feng
-
-Update to tet3.7
+- Update to tet3.7
 
 * Wed Jan 11 2006  Rui Feng 
-
-Add the support for python api  
+- Add the support for python api  
 
 * Thu Jan 05 2006  Rui Feng 
-
-Rebuild for LSB3.1 
+- Rebuild for LSB3.1 
 
 * Tue Jun 07 2005  Andrew Josey
-
-Ensure devel tree does not overlap with base in lib/tet3/
-
-* Mon Apr 18 2005  Andrew Josey
-
-The runtime package should include tcm runtime parts of the lib tree
-
+- Ensure devel tree does not overlap with base in lib/tet3/
 
 * Mon Apr 18 2005  Andrew Josey
+- The runtime package should include tcm runtime parts of the lib tree
 
-Rebuild for LSB3.0
+* Mon Apr 18 2005  Andrew Josey
+- Rebuild for LSB3.0
 
 * Wed Mar  9 2005  Andrew Josey
-
-Change payload to be gzip'd rather than bzip'd
+- Change payload to be gzip'd rather than bzip'd
 
 * Thu Mar  3 2005  Andrew Josey
-
-Add supplementary binaries
+- Add supplementary binaries
 
 * Wed Mar  2 2005  Andrew Josey
-
-Add a development package
+- Add a development package
 
 * Tue Mar  1 2005  Andrew Josey
-
-Initial spec file for an LSB tet package
-
+- Initial spec file for an LSB tet package
 
