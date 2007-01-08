@@ -54,18 +54,17 @@ developing and running test cases.
 This version for LSB 3.0 and the later version.
 
 %prep
-
 if [ ! -x /opt/lsb/bin/lsbcc ] ; then
-    LSBCC=`which lsbcc`
-    if [ ! -x "$LSBCC" ]; then
+    XLSBCC=`which lsbcc`
+    if [ ! -x "$XLSBCC" ]; then
       printf "lsbcc not found, required for compilation, aborting\n"
       exit 1
     fi
 fi
 
 if [ ! -x /opt/lsb/bin/lsbc++ ] ; then
-    LSBCPP=`which lsbc++`
-    if [ ! -x "$LSBCPP" ]; then
+    XLSBCPP=`which lsbc++`
+    if [ ! -x "$XLSBCPP" ]; then
       printf "lsbc++ not found, required for compilation, aborting\n"
       exit 1
     fi
@@ -73,49 +72,56 @@ fi
 
 %setup -cn tet3-lite-3.7 -q -a1
 %patch -p1
-if [ -n "$LSBCC" ];then
-    sed -i "s|/opt/lsb/bin/lsbcc|$LSBCC|g" contrib/python_api/Makefile
-    sed -i "s|/opt/lsb/bin/lsbcc|$LSBCC|g" src/defines/linux.mk
+
+if [ -n "$XLSBCC" ];then
+    sed -i "s|/opt/lsb/bin/lsbcc|$XLSBCC|g" contrib/python_api/Makefile
+    sed -i "s|/opt/lsb/bin/lsbcc|$XLSBCC|g" src/defines/linux.mk
 fi
-if [ -n "$LSBCPP" ];then
-    sed -i "s|/opt/lsb/bin/lsbc++|$LSBCPP|g" contrib/python_api/Makefile
-    sed -i "s|/opt/lsb/bin/lsbc++|$LSBCPP|g" src/defines/linux.mk
+if [ -n "$XLSBCPP" ];then
+    sed -i "s|/opt/lsb/bin/lsbc++|$XLSBCPP|g" contrib/python_api/Makefile
+    sed -i "s|/opt/lsb/bin/lsbc++|$XLSBCPP|g" src/defines/linux.mk
 fi
 
 
 %build
+# We have to play a little dance for the Python API. We do the stuff
+# that can indicate the build will fail first
+# if PYTHONPATH is set during the build, the location of the desired
+# value in sys.path may be different
 unset PYTHONPATH
 
+# use python itself to compute location of lib, header
 python 2>&1 > .PYTHONINFO <<END
 import sys
-print sys.path[2]
+print "PYTHONLIB="+sys.path[2]
+print "PYTHONINCLUDE="+sys.prefix+'/include/'+sys.path[2].split('/')[-1]
 END
-
-PYTHONLIB=`cat .PYTHONINFO`
-rm -f .PYTHONINFO
-
-PYTHONVERSION=`echo $PYTHONLIB | cut -d "/" -f 4 `
+. ./.PYTHONINFO
 
 if [ ! -d $PYTHONLIB ]
 then
-	echo "Can not find the python library in your system"
+	echo "Can not find the python library directory $PYTHONLIB on your system"
 	exit 1
 fi
 
+if [ ! -d $PYTHONINCLUDE/Python.h ]
+then
+	echo "Can not find the python header (Python.h) in $PYTHONINCLUDE on your system"
+	exit 1
+fi
+
+# now build the main bits
 export TET_ROOT=`pwd`
 
 sh ./configure -t lite
 cd src && make && make install
 cd ..
 
-mv contrib/python_api/Makefile contrib/python_api/Makefile.old
-sed "s@/usr/include/python2.2@/usr/include/$PYTHONVERSION@g" contrib/python_api/Makefile.old > contrib/python_api/Makefile
-rm -f contrib/python_api/Makefile.old
-
+# and finish up building the Python bits
+sed -i "s@/usr/include/python2.2@$PYTHONINCLUDE@g" contrib/python_api/Makefile
 cd contrib/python_api && make
 
 %install
-
 rm -rf $RPM_BUILD_ROOT
 cd src && make  install
 cd ..
@@ -141,7 +147,6 @@ chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-t
 
 
 %files
-
 %defattr(-,bin,bin)
 
 /opt/lsb-tet3-lite/bin
@@ -183,7 +188,6 @@ framework for developing and running test cases.
 
 
 %files devel
-
 %defattr(-,bin,bin)
 
 /opt/lsb-tet3-lite/inc
@@ -225,9 +229,7 @@ if [ -e "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]; then
 fi
 
 %post
-
 # put out a message 
-
 echo 
 echo "To use the TET-lite package set your TET_ROOT, PATH, MANPATH and PYTHONPATH environment"
 echo "variables, for example:"
