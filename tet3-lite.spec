@@ -188,34 +188,26 @@ framework for developing and running test cases.
 %changelog
 
 * Mon Mar 27 2006 Rui Feng
-
-Update to tet3.7
+- Update to tet3.7
 
 * Wed Jan 11 2006  Rui Feng                         
-
-Add the support for python api 
+- Add the support for python api 
 
 * Tue Jun 07 2005  Andrew Josey
-
-Ensure devel package lib/tet3 tree does not overlap with base package
+- Ensure devel package lib/tet3 tree does not overlap with base package
 
 * Thu Apr  28 2005  Andrew Josey
-
-Include all the runtime components in the Base package
+- Include all the runtime components in the Base package
 
 * Wed Mar  9 2005  Andrew Josey
-
-Change payload to be gzip'd rather than bzip'd
+- Change payload to be gzip'd rather than bzip'd
 
 * Thu Mar  3 2005  Andrew Josey
-
-Add supplementary binaries, and also contrib addon package
+- Add supplementary binaries, and also contrib addon package
 
 * Wed Mar  2 2005  Andrew Josey
-
-Add TET devel package
+- Add TET devel package
 
 * Tue Mar  1 2005  Andrew Josey
-
-Initial spec file for an tet lite package
+- Initial spec file for an tet lite package
 
