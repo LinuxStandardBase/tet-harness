@@ -170,8 +170,8 @@ sub GatherStats($) {
     $stats->{TOTAL_TESTS_PASSED}        = 0;
     $stats->{TOTAL_TESTS_FAILED}        = 0;
     $stats->{TOTAL_TESTS_EXPECTED}      = 0;
-    $stats->{TEST_VERS} 		= "unset";
-    $stats->{TEST_ARCH} 		= "unset";
+    $stats->{TEST_VERS}                 = "unset";
+    $stats->{TEST_ARCH}                 = "unset";
 
     # Analyse file
     open( JFILE, $journalFile ) || die "Could not open file: $journalFile\n";
@@ -198,7 +198,7 @@ sub GatherStats($) {
             next;
         }
 
-	# record test version and also architecture
+        # record test version and also architecture
         # there are two formats for this during a transitional period
         # "LSB Certification Version" obsolete in favor of a test suite key
         elsif ( $line =~ /^30\|.*VSX_NAME=LSB Certification Version (.*) (.*)$/ ) {
@@ -223,9 +223,9 @@ sub GatherStats($) {
 
         # elsif: what do we do if it doesn't match. Nothing?
 
-	# LSB-runtime-test only:
-	# for the .os sections need to double expected counts to allow
-	# for the macro versions.
+        # LSB-runtime-test only:
+        # for the .os sections need to double expected counts to allow
+        # for the macro versions.
         elsif ( $line =~ /^70\|.*total tests in (ANSI|POSIX|LSB|PTHR).os ([0-9]+)/ ) {
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
@@ -400,9 +400,9 @@ sub PrintSummary($$$) {
                     "FAIL"
                 )
                 || $isDetailed
-		|| ( $PFMap{ $stats->{TESTS}{$testName}{$testNum}{STATE} } eq "FIP"
-			&& $ShowFIP
-		)
+                || ( $PFMap{ $stats->{TESTS}{$testName}{$testNum}{STATE} } eq "FIP"
+                        && $ShowFIP
+                )
               )
             {
                 print "$testName $testNum $testState";
@@ -635,15 +635,15 @@ sub LoadNetWaiverFile($) {
 
     if (! -d $waiverdir) {
         my $result = mkdir $waiverdir;
-	if ($result eq 0) {
+        if ($result eq 0) {
             warn "Cannot create $waiverdir\n";
-	    return $waived;
-	}
+            return $waived;
+        }
     }
 
     if (! -w $waiverdir) {
         warn "Cannot write to $waiverdir\n";
-	return $waived;
+        return $waived;
     }
 
     # bail if user asked to not access net
@@ -653,7 +653,7 @@ sub LoadNetWaiverFile($) {
         print "Checking networked waivers information -- file: $waiversite/$filename\n";
         $ret = system "LC_ALL=C wget -N -o $waiverdir/wget.log -P $waiverdir $waiversite/$filename";
         if ( $ret != 0 ) {
-    	    print "Warning, wget was unable to locate network waivers to retrieve..\n";
+                print "Warning, wget was unable to locate network waivers to retrieve..\n";
             return;
         }
 
@@ -665,7 +665,7 @@ sub LoadNetWaiverFile($) {
     # bail if user asked to not used cached waivers
     if ($NoCachedWaiver) {
         print "Cached waiver retrieval disabled...\n";
-	return $waived;
+        return $waived;
     }
 
     if (! open( WAIVERFILE, "$waiverdir/$filename" )) {
@@ -697,9 +697,9 @@ getopts( 'dfhlnu:p:b:e:r:o:w:v', \%options );
 if ( exists( $options{'h'} ) || ( $#ARGV != 0 && $#ARGV != 1 ) ) {
     print STDOUT <<"EOM"
 Usage: $0 [-h] [-d] [-f] [-l] [-n] [-v]
-	  [-w waiver_file] [-u username] [-p password] 
-	  [-b db_name] [-o host] [-e vendor_name] [-r version] 
-	  journal [journal2]
+          [-w waiver_file] [-u username] [-p password] 
+          [-b db_name] [-o host] [-e vendor_name] [-r version] 
+          journal [journal2]
 
     -h               Display Help
     -d               Display a detailed summary of test results. The
@@ -792,25 +792,25 @@ else {
         else  {
             # old way: compat
             if ( !defined( $stats->{TEST_NAME} ) ) {
-		$waivers = LoadNetWaiverFile($stats->{TEST_VERS});
+                $waivers = LoadNetWaiverFile($stats->{TEST_VERS});
             }
             else {
-		# remap architecture to form used for waiver files
-		# this will later be replaced by code in a module
-		if ($stats->{TEST_ARCH} =~ m/i[3456]86/) {
-		    $stats->{TEST_ARCH} = "IA32"; }
-		elsif ($stats->{TEST_ARCH} =~ m/x86_64/) {
-		    $stats->{TEST_ARCH} = "AMD64"; }
-		elsif ($stats->{TEST_ARCH} =~ m/ia64/) {
-		    $stats->{TEST_ARCH} = "IA64"; }
-		elsif ($stats->{TEST_ARCH} =~ m/ppc64/) {
-		    $stats->{TEST_ARCH} = "PPC64"; }
-		elsif ($stats->{TEST_ARCH} =~ m/ppc/) {
-		    $stats->{TEST_ARCH} = "PPC32"; }
-		elsif ($stats->{TEST_ARCH} =~ m/S390x/) {
-		    $stats->{TEST_ARCH} = "S390X"; }
-		elsif ($stats->{TEST_ARCH} =~ m/S390/) {
-		    $stats->{TEST_ARCH} = "S390"; }
+                # remap architecture to form used for waiver files
+                # this will later be replaced by code in a module
+                if ($stats->{TEST_ARCH} =~ m/i[3456]86/) {
+                    $stats->{TEST_ARCH} = "IA32"; }
+                elsif ($stats->{TEST_ARCH} =~ m/x86_64/) {
+                    $stats->{TEST_ARCH} = "AMD64"; }
+                elsif ($stats->{TEST_ARCH} =~ m/ia64/) {
+                    $stats->{TEST_ARCH} = "IA64"; }
+                elsif ($stats->{TEST_ARCH} =~ m/ppc64/) {
+                    $stats->{TEST_ARCH} = "PPC64"; }
+                elsif ($stats->{TEST_ARCH} =~ m/ppc/) {
+                    $stats->{TEST_ARCH} = "PPC32"; }
+                elsif ($stats->{TEST_ARCH} =~ m/S390x/) {
+                    $stats->{TEST_ARCH} = "S390X"; }
+                elsif ($stats->{TEST_ARCH} =~ m/S390/) {
+                    $stats->{TEST_ARCH} = "S390"; }
                 $waivers = LoadNetWaiverFile("$stats->{TEST_NAME}.$stats->{TEST_VERS}.$stats->{TEST_ARCH}");
             }
         }
