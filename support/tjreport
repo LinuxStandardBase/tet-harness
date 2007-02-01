@@ -10,6 +10,10 @@
 #
 # Post-CVS changelog:
 #
+# 2007-02-01 Stew Benedict, Mats Wichmann
+# Bug 1561:
+# Catch and report journal anomalies
+#
 # 2006-12-22 Stew Benedict
 # Bug 1440:
 # Add -f (show FIP), -n (no waiver from network) options
@@ -150,6 +154,7 @@ my ($VerboseSummary) = 0;
 my ($NoNetWaiver) = 0;
 my ($NoCachedWaiver) = 0;
 my ($ShowFIP) = 0;
+my (%anomalies) = ();
 
 # Analyses one journal file to get statistics on pass/failure
 #
@@ -252,7 +257,8 @@ sub GatherStats($) {
             $testNum      = $line[1];
             $errorMessage = "";
             if ($intest) {
-                print "Error: missing IC end before start line $lineno, journal invalid\n";
+                $anomalies{$lineno}{noend} = $testName . " " . $testNum;
+                $stats->{STATE_SUMMARY}{TEST_ERROR} += 1;
             }
             $intest = 1;
             $foundresult = 0;
@@ -260,7 +266,8 @@ sub GatherStats($) {
         elsif ( $line[0] =~ /^410/ ) {
             # end of a test
             if ($intest && !$foundresult) {
-                print "Error: missing result at ${testName} ${testNum}, line $lineno, journal invalid\n";
+                $anomalies{$lineno}{noresult} = $testName . " " . $testNum;
+                $stats->{STATE_SUMMARY}{TEST_ERROR} += 1;
             }
             $intest = 0;
         }
@@ -483,6 +490,15 @@ sub PrintSummary($$$) {
           "\nJournal indicates expected $stats->{TOTAL_TESTS_EXPECTED} tests,"
           . " found $numTests\n";
     }
+
+    if ($stats->{STATE_SUMMARY}{TEST_ERROR} > 0)
+    {
+        print "\nJournal contains $stats->{STATE_SUMMARY}{TEST_ERROR} error(s) - invalid:\n";
+        foreach my $key (sort keys %anomalies) {
+            printf("Line #: %5d - No End after Start for %s\n", $key, $anomalies{$key}{noend}) if $anomalies{$key}{noend};
+            printf("Line #: %5d - Missing result for %s\n", $key, $anomalies{$key}{noresult})  if $anomalies{$key}{noresult};
+        }
+    } 
 }
 
 #----------------------------------------------------------------------
