@@ -10,6 +10,10 @@
 #
 # Post-CVS changelog:
 #
+# 2007-02-01 Stew Benedict, Mats Wichmann
+# Bug 1561:
+# Catch and report journal anomalies
+#
 # 2006-12-22 Stew Benedict
 # Bug 1440:
 # Add -f (show FIP), -n (no waiver from network) options
@@ -150,6 +154,7 @@ my ($VerboseSummary) = 0;
 my ($NoNetWaiver) = 0;
 my ($NoCachedWaiver) = 0;
 my ($ShowFIP) = 0;
+my (%anomalies) = ();
 
 # Analyses one journal file to get statistics on pass/failure
 #
@@ -170,8 +175,8 @@ sub GatherStats($) {
     $stats->{TOTAL_TESTS_PASSED}        = 0;
     $stats->{TOTAL_TESTS_FAILED}        = 0;
     $stats->{TOTAL_TESTS_EXPECTED}      = 0;
-    $stats->{TEST_VERS} 		= "unset";
-    $stats->{TEST_ARCH} 		= "unset";
+    $stats->{TEST_VERS}                 = "unset";
+    $stats->{TEST_ARCH}                 = "unset";
 
     # Analyse file
     open( JFILE, $journalFile ) || die "Could not open file: $journalFile\n";
@@ -183,6 +188,8 @@ sub GatherStats($) {
     my ($errorMessage);
     my ($tmp);
     my ($lineno) = 0;
+    my ($intest);
+    my ($foundresult);
     while ( defined( $line = <JFILE> ) ) {
 
         $lineno++;
@@ -193,12 +200,14 @@ sub GatherStats($) {
             $stats->{TEST_TIME} = $line[1];
             next;
         }
+
+        # Look for test system
         elsif ( $line =~ /^30\|.*VSX_SYS=(.*)$/ ) {
             $stats->{TEST_SYSTEM} = $1;
             next;
         }
 
-	# record test version and also architecture
+        # record test version and also architecture
         # there are two formats for this during a transitional period
         # "LSB Certification Version" obsolete in favor of a test suite key
         elsif ( $line =~ /^30\|.*VSX_NAME=LSB Certification Version (.*) (.*)$/ ) {
@@ -221,31 +230,50 @@ sub GatherStats($) {
             $stats->{TEST_NAME} = "runtime";
         }
 
-        # elsif: what do we do if it doesn't match. Nothing?
-
-	# LSB-runtime-test only:
-	# for the .os sections need to double expected counts to allow
-	# for the macro versions.
+        # LSB-runtime-test only:
+        # for the .os sections need to double expected counts to allow
+        # for the macro versions.
         elsif ( $line =~ /^70\|.*total tests in (ANSI|POSIX|LSB|PTHR).os ([0-9]+)/ ) {
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
         }
+
+        # all others, treat the count normally
         elsif ( $line =~ /^70\|.*total tests in ([A-Za-z.0-9_-]+) ([0-9]+)/ ) {
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
         }
 
+        #
         # Look for test results
+        #
         @line = split( / /, $line );
+
         if ( $line[0] =~ /^10/ || $line[0] =~ /^110/ || $line[0] =~ /^300/ ) {
+            # these are run start, build start, clean start
             $testName = $line[1];
         }
-        elsif ( $line[0] =~ /^200/ ) {
+        elsif ( $line[0] =~ /^400/ ) {
+            # start of a test
             $testNum      = $line[1];
             $errorMessage = "";
+            if ($intest) {
+                $anomalies{$lineno}{noend} = $testName . " " . $testNum;
+                $stats->{STATE_SUMMARY}{TEST_ERROR} += 1;
+            }
+            $intest = 1;
+            $foundresult = 0;
+        }
+        elsif ( $line[0] =~ /^410/ ) {
+            # end of a test
+            if ($intest && !$foundresult) {
+                $anomalies{$lineno}{noresult} = $testName . " " . $testNum;
+                $stats->{STATE_SUMMARY}{TEST_ERROR} += 1;
+            }
+            $intest = 0;
         }
         elsif ( $line[0] =~ /^220/ ) {
-
-            # Test state report
+            # a test result
+            $foundresult = 1;
             $testState =
               exists( $StateMap{ $line[2] } )
               ? $StateMap{ $line[2] }
@@ -270,8 +298,7 @@ sub GatherStats($) {
             }
         }
         elsif ( $line[0] =~ /^520/ ) {
-
-            # Accumulate any error/info messages associated with test
+            # test info/errors
             $line =~ /\|([^\|]*)$/;
             $tmp = $1;
             chomp($tmp);
@@ -400,9 +427,9 @@ sub PrintSummary($$$) {
                     "FAIL"
                 )
                 || $isDetailed
-		|| ( $PFMap{ $stats->{TESTS}{$testName}{$testNum}{STATE} } eq "FIP"
-			&& $ShowFIP
-		)
+                || ( $PFMap{ $stats->{TESTS}{$testName}{$testNum}{STATE} } eq "FIP"
+                        && $ShowFIP
+                )
               )
             {
                 print "$testName $testNum $testState";
@@ -464,6 +491,14 @@ sub PrintSummary($$$) {
           . " found $numTests\n";
     }
 
+    if ($stats->{STATE_SUMMARY}{TEST_ERROR} > 0)
+    {
+        print "\nJournal contains $stats->{STATE_SUMMARY}{TEST_ERROR} error(s) - invalid:\n";
+        foreach my $key (sort keys %anomalies) {
+            printf("Line #: %5d - No End after Start for %s\n", $key, $anomalies{$key}{noend}) if $anomalies{$key}{noend};
+            printf("Line #: %5d - Missing result for %s\n", $key, $anomalies{$key}{noresult})  if $anomalies{$key}{noresult};
+        }
+    } 
 }
 
 #----------------------------------------------------------------------
@@ -635,15 +670,15 @@ sub LoadNetWaiverFile($) {
 
     if (! -d $waiverdir) {
         my $result = mkdir $waiverdir;
-	if ($result eq 0) {
+        if ($result eq 0) {
             warn "Cannot create $waiverdir\n";
-	    return $waived;
-	}
+            return $waived;
+        }
     }
 
     if (! -w $waiverdir) {
         warn "Cannot write to $waiverdir\n";
-	return $waived;
+        return $waived;
     }
 
     # bail if user asked to not access net
@@ -653,7 +688,7 @@ sub LoadNetWaiverFile($) {
         print "Checking networked waivers information -- file: $waiversite/$filename\n";
         $ret = system "LC_ALL=C wget -N -o $waiverdir/wget.log -P $waiverdir $waiversite/$filename";
         if ( $ret != 0 ) {
-    	    print "Warning, wget was unable to locate network waivers to retrieve..\n";
+                print "Warning, wget was unable to locate network waivers to retrieve..\n";
             return;
         }
 
@@ -665,7 +700,7 @@ sub LoadNetWaiverFile($) {
     # bail if user asked to not used cached waivers
     if ($NoCachedWaiver) {
         print "Cached waiver retrieval disabled...\n";
-	return $waived;
+        return $waived;
     }
 
     if (! open( WAIVERFILE, "$waiverdir/$filename" )) {
@@ -697,9 +732,9 @@ getopts( 'dfhlnu:p:b:e:r:o:w:v', \%options );
 if ( exists( $options{'h'} ) || ( $#ARGV != 0 && $#ARGV != 1 ) ) {
     print STDOUT <<"EOM"
 Usage: $0 [-h] [-d] [-f] [-l] [-n] [-v]
-	  [-w waiver_file] [-u username] [-p password] 
-	  [-b db_name] [-o host] [-e vendor_name] [-r version] 
-	  journal [journal2]
+          [-w waiver_file] [-u username] [-p password] 
+          [-b db_name] [-o host] [-e vendor_name] [-r version] 
+          journal [journal2]
 
     -h               Display Help
     -d               Display a detailed summary of test results. The
@@ -792,25 +827,25 @@ else {
         else  {
             # old way: compat
             if ( !defined( $stats->{TEST_NAME} ) ) {
-		$waivers = LoadNetWaiverFile($stats->{TEST_VERS});
+                $waivers = LoadNetWaiverFile($stats->{TEST_VERS});
             }
             else {
-		# remap architecture to form used for waiver files
-		# this will later be replaced by code in a module
-		if ($stats->{TEST_ARCH} =~ m/i[3456]86/) {
-		    $stats->{TEST_ARCH} = "IA32"; }
-		elsif ($stats->{TEST_ARCH} =~ m/x86_64/) {
-		    $stats->{TEST_ARCH} = "AMD64"; }
-		elsif ($stats->{TEST_ARCH} =~ m/ia64/) {
-		    $stats->{TEST_ARCH} = "IA64"; }
-		elsif ($stats->{TEST_ARCH} =~ m/ppc64/) {
-		    $stats->{TEST_ARCH} = "PPC64"; }
-		elsif ($stats->{TEST_ARCH} =~ m/ppc/) {
-		    $stats->{TEST_ARCH} = "PPC32"; }
-		elsif ($stats->{TEST_ARCH} =~ m/S390x/) {
-		    $stats->{TEST_ARCH} = "S390X"; }
-		elsif ($stats->{TEST_ARCH} =~ m/S390/) {
-		    $stats->{TEST_ARCH} = "S390"; }
+                # remap architecture to form used for waiver files
+                # this will later be replaced by code in a module
+                if ($stats->{TEST_ARCH} =~ m/i[3456]86/) {
+                    $stats->{TEST_ARCH} = "IA32"; }
+                elsif ($stats->{TEST_ARCH} =~ m/x86_64/) {
+                    $stats->{TEST_ARCH} = "AMD64"; }
+                elsif ($stats->{TEST_ARCH} =~ m/ia64/) {
+                    $stats->{TEST_ARCH} = "IA64"; }
+                elsif ($stats->{TEST_ARCH} =~ m/ppc64/) {
+                    $stats->{TEST_ARCH} = "PPC64"; }
+                elsif ($stats->{TEST_ARCH} =~ m/ppc/) {
+                    $stats->{TEST_ARCH} = "PPC32"; }
+                elsif ($stats->{TEST_ARCH} =~ m/S390x/) {
+                    $stats->{TEST_ARCH} = "S390X"; }
+                elsif ($stats->{TEST_ARCH} =~ m/S390/) {
+                    $stats->{TEST_ARCH} = "S390"; }
                 $waivers = LoadNetWaiverFile("$stats->{TEST_NAME}.$stats->{TEST_VERS}.$stats->{TEST_ARCH}");
             }
         }
