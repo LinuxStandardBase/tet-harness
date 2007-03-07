@@ -1,19 +1,22 @@
 # LSB Compliant packages require the following in ~/.rpmmacros
 #%_binary_payload	w9.gzdio
 
-# LSB release version
+# upstream version, LSB specification version, LSB release version
+%define version 3.7
+%define LSBSpec 3.1
 %define LSBRelease 3
 
 Summary: Test Environment Toolkit
 Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
-Version: 3.7
-Release: 5.1.lsb%{LSBRelease}
-Source0: tet3.7-unsup.src.tgz
+Version: %{version}
+# rel is passed in from Makefile so we only have to set the buildno one place
+Release: %{rel}.lsb%{LSBRelease}
+Source0: tet%{version}-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
-Patch0: tet3.7-lite-lsb.patch
+Patch0: tet%{version}-lite-lsb.patch
 License: Artistic
 Group: Development/Tools
 Buildroot: %{_builddir}/%{name}-root
