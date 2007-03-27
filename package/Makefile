@@ -75,7 +75,11 @@ first_make_rule: all
 # remember that all shell commands need to be terminated by a ';'
 # dummy is a dummy file to copy in place 
 
+ifndef BUILD_NO_DEB
+all: lsbtetpackage deb_package
+else
 all: lsbtetpackage
+endif
 
 lsbtetpackage: $(LSB_TET_SOURCE_NAME) $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME)
                                                                                 
@@ -122,5 +126,15 @@ $(TET_SOURCE_NAME) $(TET_BINARY_NAME) $(TET_DEVEL_BINARY_NAME):	$(UPSTREAMSOURCE
 	@mv $(RPM_BINARY_DIR)/$(TET_DEVEL_BINARY_NAME) .
 	@rm -rf $(RPM_TMP_BUILD_DIR)
 
+deb_package: $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME)
+	@fakeroot alien -cdk $(LSB_TET_BINARY_NAME)
+	@fakeroot alien -cdk $(LSB_TET_DEVEL_BINARY_NAME)
+
+list_uploadable:
+	@echo $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME)
+ifndef BUILD_NO_DEB
+	@ls *.deb
+endif
+
 clean clobber:
-	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2) 
+	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2) $(SOURCE3) *.rpm *.deb
