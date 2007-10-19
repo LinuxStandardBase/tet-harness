@@ -105,7 +105,7 @@
 
 # change this to change where waivers are fetched from
 
-my $waiversite = "http://freestandards.org/cert/lsb/waivers";
+my $waiversite = "http://linux-foundation.org/cert/lsb/waivers";
 my $waiverdir = $ENV{HOME} . "/.tjreport";
 
 use strict;
