@@ -105,7 +105,7 @@
 
 # change this to change where waivers are fetched from
 
-my $waiversite = "http://freestandards.org/cert/lsb/waivers";
+my $waiversite = "http://linux-foundation.org/cert/lsb/waivers";
 my $waiverdir = $ENV{HOME} . "/.tjreport";
 
 use strict;
@@ -252,7 +252,7 @@ sub GatherStats($) {
             # these are run start, build start, clean start
             $testName = $line[1];
         }
-        elsif ( $line[0] =~ /^400/ ) {
+        elsif ( $line[0] =~ /^400/ || $line[0] =~ /^200/ ) {
             # start of a test
             $testNum      = $line[1];
             $errorMessage = "";
