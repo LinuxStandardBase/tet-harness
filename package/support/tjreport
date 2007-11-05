@@ -494,7 +494,7 @@ sub PrintSummary($$$) {
     if ($stats->{STATE_SUMMARY}{TEST_ERROR} > 0)
     {
         print "\nJournal contains $stats->{STATE_SUMMARY}{TEST_ERROR} error(s) - invalid:\n";
-        foreach my $key (sort keys %anomalies) {
+        foreach my $key (sort {$a <=> $b} keys %anomalies) {
             printf("Line #: %5d - No End after Start for %s\n", $key, $anomalies{$key}{noend}) if $anomalies{$key}{noend};
             printf("Line #: %5d - Missing result for %s\n", $key, $anomalies{$key}{noresult})  if $anomalies{$key}{noresult};
         }
