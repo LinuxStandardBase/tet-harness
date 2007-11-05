@@ -189,6 +189,7 @@ sub GatherStats($) {
     my ($tmp);
     my ($lineno) = 0;
     my ($intest);
+    my ($inpurpose);
     my ($foundresult);
     while ( defined( $line = <JFILE> ) ) {
 
@@ -252,7 +253,7 @@ sub GatherStats($) {
             # these are run start, build start, clean start
             $testName = $line[1];
         }
-        elsif ( $line[0] =~ /^400/ || $line[0] =~ /^200/ ) {
+        elsif ( $line[0] =~ /^400/ ) {
             # start of a test
             $testNum      = $line[1];
             $errorMessage = "";
@@ -261,19 +262,26 @@ sub GatherStats($) {
                 $stats->{STATE_SUMMARY}{TEST_ERROR} += 1;
             }
             $intest = 1;
+            $inpurpose = 0;
             $foundresult = 0;
         }
         elsif ( $line[0] =~ /^410/ ) {
             # end of a test
-            if ($intest && !$foundresult) {
+            if ($intest && (!$foundresult || $inpurpose)) {
                 $anomalies{$lineno}{noresult} = $testName . " " . $testNum;
                 $stats->{STATE_SUMMARY}{TEST_ERROR} += 1;
             }
             $intest = 0;
         }
+        elsif ( $line[0] =~ /^200/ ) {
+            # start of a purpose
+            $testNum      = $line[1];
+            $inpurpose = 1;
+        }
         elsif ( $line[0] =~ /^220/ ) {
             # a test result
             $foundresult = 1;
+            $inpurpose = 0;
             $testState =
               exists( $StateMap{ $line[2] } )
               ? $StateMap{ $line[2] }
@@ -494,7 +502,7 @@ sub PrintSummary($$$) {
     if ($stats->{STATE_SUMMARY}{TEST_ERROR} > 0)
     {
         print "\nJournal contains $stats->{STATE_SUMMARY}{TEST_ERROR} error(s) - invalid:\n";
-        foreach my $key (sort keys %anomalies) {
+        foreach my $key (sort {$a <=> $b} keys %anomalies) {
             printf("Line #: %5d - No End after Start for %s\n", $key, $anomalies{$key}{noend}) if $anomalies{$key}{noend};
             printf("Line #: %5d - Missing result for %s\n", $key, $anomalies{$key}{noresult})  if $anomalies{$key}{noresult};
         }
