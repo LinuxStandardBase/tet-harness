@@ -243,6 +243,11 @@ sub GatherStats($) {
         elsif ( $line =~ /^70\|.*total tests in ([A-Za-z.0-9_-]+) ([0-9]+)/ ) {
             $stats->{TOTAL_TESTS_EXPECTED} += $2;
         }
+        # contributed inet_aton test that was dropped in LSB.os
+        # does not get doubled
+        if ( $line =~ /^70\|.*total tests in LSB.os ([0-9]+)/ ) {
+            $stats->{TOTAL_TESTS_EXPECTED} -= 1;
+        }
 
         #
         # Look for test results
