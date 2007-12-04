@@ -155,6 +155,7 @@ my ($NoNetWaiver) = 0;
 my ($NoCachedWaiver) = 0;
 my ($ShowFIP) = 0;
 my (%anomalies) = ();
+my ($MangledPosixCounts) = 0;
 
 # Analyses one journal file to get statistics on pass/failure
 #
@@ -256,6 +257,13 @@ sub GatherStats($) {
             # does not get doubled - single test, cannot adjust totals stanza
             if ( $testName =~ /inet_aton/ ) {
                 $stats->{TOTAL_TESTS_EXPECTED} -= 1;
+            }
+            # more count hackery, posix_spawnattr* have 17 tests, 
+            # we add 9 to the .exec file counts, which get doubled, 
+            # now we need to back one off 
+            if ( $testName =~ /posix_spawnattr/ && $MangledPosixCounts == 0 ) {
+                $MangledPosixCounts = 1;
+		$stats->{TOTAL_TESTS_EXPECTED} -= 1;
             }
         }
         elsif ( $line[0] =~ /^400/ ) {
