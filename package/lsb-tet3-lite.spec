@@ -227,7 +227,7 @@ framework for developing and running test cases.
 
 %clean
 # uncomment later. leave in now for speed
-if [ -e "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]; then 
+if [ ! -z "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]; then 
     rm -rf ${RPM_BUILD_ROOT}
 fi
 
