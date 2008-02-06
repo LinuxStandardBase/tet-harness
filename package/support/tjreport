@@ -253,11 +253,6 @@ sub GatherStats($) {
         if ( $line[0] =~ /^10/ || $line[0] =~ /^110/ || $line[0] =~ /^300/ ) {
             # these are run start, build start, clean start
             $testName = $line[1];
-            # contributed inet_aton test that was added in LSB.os
-            # does not get doubled - single test, cannot adjust totals stanza
-            if ( $testName =~ /inet_aton/ ) {
-                $stats->{TOTAL_TESTS_EXPECTED} -= 1;
-            }
             # more count hackery, posix_spawnattr* have 17 tests, 
             # we add 9 to the .exec file counts, which get doubled, 
             # now we need to back one off 
@@ -299,6 +294,12 @@ sub GatherStats($) {
               exists( $StateMap{ $line[2] } )
               ? $StateMap{ $line[2] }
               : "UNKNOWN";
+
+            # contributed network tests added in LSB.os
+            # should not get doubled. same goes for libm/fpe tests
+            if ( $testName =~ /LSB.os\/network|LSB.os\/libm\/fpe/ ) {
+                $stats->{TOTAL_TESTS_EXPECTED} -= 1;
+            }
 
             if ( exists( $stats->{TESTS}{$testName}{$testNum}{STATE} ) ) {
                 die "Error: dup entry at ${testName} ${testNum}, line $lineno, journal invalid\n";
