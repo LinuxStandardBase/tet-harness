@@ -21,8 +21,8 @@
 PACKAGE=tet3-lite
 LSB_PACKAGE=lsb-tet3-lite
 VERSION=3.7
-LSBRelease=3
-RELEASE=11
+LSBRelease=4
+RELEASE=12
 LSB_RELEASE=$(RELEASE).lsb$(LSBRelease)
 
 FULL_PACKAGE_NAME=$(PACKAGE)-$(VERSION)
@@ -88,9 +88,9 @@ $(LSB_TET_SOURCE_NAME) $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME):	$(UP
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/RPMS
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/SRPMS
 ifdef SIGN_PACKAGES
-	@expect -c 'set timeout -1' -c 'spawn $(RPM_BUILD_CMD) --sign --rcfile ${RCFILELIST} --define=_sourcedir\ $(PWD) --define=_topdir\ $(RPM_TMP_BUILD_DIR) --define=_target_cpu\ $(RPM_BUILD_ARCH) --define=_defaultdocdir\ $(LSB_TET_DOC_DIR) --define=rel\ $(RELEASE) -ba $(LSB_PACKAGE).spec' -c 'expect -ex "Enter pass phrase:"' -c 'send "\n"' -c 'expect "Executing(%clean)"' -c 'expect "exit 0"' -c 'send "\n"'
+	@expect -c 'set timeout -1' -c 'spawn $(RPM_BUILD_CMD) --sign --rcfile ${RCFILELIST} --define=_sourcedir\ $(PWD) --define=_topdir\ $(RPM_TMP_BUILD_DIR) --define=_target_cpu\ $(RPM_BUILD_ARCH) --define=_defaultdocdir\ $(LSB_TET_DOC_DIR) --define=LSBRelease\ $(LSBRelease) --define=rel\ $(RELEASE) -ba $(LSB_PACKAGE).spec' -c 'expect -ex "Enter pass phrase:"' -c 'send "\n"' -c 'expect "Executing(%clean)"' -c 'expect "exit 0"' -c 'send "\n"'
 else
-	@$(RPM_BUILD_CMD) --rcfile ${RCFILELIST} --define="_sourcedir $(PWD)" --define="_topdir $(RPM_TMP_BUILD_DIR)" --define="_target_cpu $(RPM_BUILD_ARCH)" --define="_defaultdocdir $(LSB_TET_DOC_DIR)" --define="rel $(RELEASE)" -ba $(LSB_PACKAGE).spec
+	@$(RPM_BUILD_CMD) --rcfile ${RCFILELIST} --define="_sourcedir $(PWD)" --define="_topdir $(RPM_TMP_BUILD_DIR)" --define="_target_cpu $(RPM_BUILD_ARCH)" --define="_defaultdocdir $(LSB_TET_DOC_DIR)" --define="LSBRelease $(LSBRelease)" --define="rel $(RELEASE)" -ba $(LSB_PACKAGE).spec
 endif
 	@mv $(RPM_SRPM_DIR)/$(LSB_TET_SOURCE_NAME) .
 	@mv $(RPM_BINARY_DIR)/$(LSB_TET_BINARY_NAME) .
