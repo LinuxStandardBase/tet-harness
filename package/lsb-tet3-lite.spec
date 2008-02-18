@@ -4,7 +4,6 @@
 # upstream version, LSB specification version, LSB release version
 %define version 3.7
 %define LSBSpec 3.1
-%define LSBRelease 3
 
 Summary: Test Environment Toolkit
 Name: lsb-tet3-lite
@@ -12,6 +11,7 @@ Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: %{version}
 # rel is passed in from Makefile so we only have to set the buildno one place
+# LSBRelease is also only in the Makfile now (sb)
 Release: %{rel}.lsb%{LSBRelease}
 Source0: tet%{version}-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
@@ -124,6 +124,18 @@ cd ..
 sed -i "s@/usr/include/python2.2@$PYTHONINCLUDE@g" contrib/python_api/Makefile
 cd contrib/python_api && make
 
+# post message now in a README
+cd -
+cat > README.%{name} << EOF 
+To use the TET-lite package set your TET_ROOT, PATH, MANPATH and PYTHONPATH environment
+variables, for example:
+   export TET_ROOT=/opt/lsb-tet3-lite
+   export PATH=\$PATH:\$TET_ROOT/bin
+   export MANPATH=\$MANPATH:\$TET_ROOT/man
+   export PYTHONPATH=\$TET_ROOT/lib/python
+See /opt/lsb-tet3-lite/profile for sample profile additions
+EOF
+
 %install
 rm -rf $RPM_BUILD_ROOT
 cd src && make  install
@@ -131,7 +143,7 @@ cd ..
 mkdir -p $RPM_BUILD_ROOT/opt/lsb-tet3-lite
 find inc lib bin man -print|grep -v .keep_me|cpio -pdv $RPM_BUILD_ROOT/opt/lsb-tet3-lite/
 mkdir -p $RPM_BUILD_ROOT/opt/lsb-tet3-lite/doc
-cp  README.FIRST Artistic Licence $RPM_BUILD_ROOT/opt/lsb-tet3-lite/doc/
+cp  README.FIRST Artistic Licence README.%{name} $RPM_BUILD_ROOT/opt/lsb-tet3-lite/doc/
 install -m 555 contrib/scripts/vres $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/vres
 install -m 555 contrib/scripts/dres $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/dres
 mkdir -p $RPM_BUILD_ROOT/opt/lsb-tet3-lite/lib/python
@@ -232,19 +244,11 @@ if [ ! -z "${RPM_BUILD_ROOT}"  -a "${RPM_BUILD_ROOT}" != "/" ]; then
 fi
 
 %post
-# put out a message 
-echo 
-echo "To use the TET-lite package set your TET_ROOT, PATH, MANPATH and PYTHONPATH environment"
-echo "variables, for example:"
-echo "   export TET_ROOT=/opt/lsb-tet3-lite"
-echo "   export PATH=\$PATH:\$TET_ROOT/bin"
-echo "   export MANPATH=\$MANPATH:\$TET_ROOT/man"
-echo "   export PYTHONPATH=\$TET_ROOT/lib/python"
-echo "See /opt/lsb-tet3-lite/profile for sample profile additions"
-echo
-
 
 %changelog
+* Mon Feb 18 2008 Stew Benedict <stewb@linux-foundation.org>
+- move the %%post message to README.%{name} (bug 1940)
+
 * Mon Jan  8 2007 Stew Benedict
 - Remove dependence on absolute path in case lsbcc is somewhere else
 

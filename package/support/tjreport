@@ -470,7 +470,7 @@ sub PrintSummary($$$) {
                             $testArch = "UNKNOWN";
                         }
 
-                        print "  URL: http://developer.freestandards.org/lsbchk?suite=$testSuite&arch=$testArch&testcase=$testName&tpnum=$testNum&result=$testState\n"
+                        print "  URL: http://developer.linux-foundation.org/lsbchk?suite=$testSuite&arch=$testArch&testcase=$testName&tpnum=$testNum&result=$testState\n"
                     }
                     print "\n";
                 }
