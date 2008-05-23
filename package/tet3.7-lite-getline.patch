@@ -1,0 +1,120 @@
+=== modified file tet3-lite-3.7/src/tet3/tcc/scen1.c'
+--- tet3-lite-3.7/src/tet3/tcc/scen1.c	2008-05-23 13:57:08 +0000
++++ tet3-lite-3.7/src/tet3/tcc/scen1.c	2008-05-23 13:59:31 +0000
+@@ -98,7 +98,7 @@
+ #define isattached(s)	(*(s) && !isspace(*(s)))
+ 
+ /*
+-** structure of the line cache stack used by getline() and ungetline()
++** structure of the line cache stack used by tgetline() and ungetline()
+ ** this is a linked list
+ ** the lc_next and lc_last elements must be 1st and 2nd so as to
+ ** enable the stack to be manipulated by the llist functions
+@@ -138,7 +138,7 @@
+ 
+ /*
+ ** pointer to the currently active input file stack element;
+-** that is: the element in the stack where getline() and ungetline()
++** that is: the element in the stack where tgetline() and ungetline()
+ ** fetch and store input lines
+ **
+ ** normally, the currently active element is at the top of the stack;
+@@ -152,7 +152,7 @@
+ 
+ /* static function declarations */
+ static int find1scen PROTOLIST((void));
+-static char *getline PROTOLIST((void));
++static char *tgetline PROTOLIST((void));
+ static void includefile PROTOLIST((char *, char *, int));
+ static struct ifstack *ifsalloc PROTOLIST((void));
+ static void ifsfree PROTOLIST((struct ifstack *));
+@@ -245,7 +245,7 @@
+ 	**	the scenario processor can find it
+ 	*/
+ 	for (;;) {
+-		if ((line = getline()) == (char *) 0)
++		if ((line = tgetline()) == (char *) 0)
+ 			return(ferror(ifstp->if_fp) ? -1 : 0);
+ 		if (!isspace(*line)) {
+ 			/* start of new scenario */
+@@ -288,7 +288,7 @@
+ 	register struct scentab *ep;
+ 
+ 	/* read the scenario name - starts in column 1 */
+-	line = getline();
++	line = tgetline();
+ 	ASSERT(line);
+ 	ASSERT(!isspace(*line));
+ 
+@@ -316,7 +316,7 @@
+ 		return(-1);
+ 
+ 	/* process the rest of the current scenario */
+-	while ((line = getline()) != (char *) 0) {
++	while ((line = tgetline()) != (char *) 0) {
+ 		if (!isspace(*line)) {
+ 			/* a new scenario */
+ 			ungetline(line);
+@@ -1197,13 +1197,15 @@
+ }
+ 
+ /*
+-**	getline() - get the next non-blank, non-comment line
++**	tgetline() - get the next non-blank, non-comment line
+ **		from the currently active input file
+ **
+ **	return a pointer to the line, or (char *) 0 on EOF or error
++**
++** NOTE: getline renamed tgetline to avoid conflict with new POSIX getline
+ */
+ 
+-static char *getline()
++static char *tgetline()
+ {
+ 	static char buf[LBUFLEN];
+ 	struct lcache *lcp;
+@@ -1216,7 +1218,7 @@
+ 	if ((lcp = lcpop()) != (struct lcache *) 0) {
+ 		(void) strcpy(buf, lcp->lc_line);
+ 		lcfree(lcp);
+-		TRACE2(tet_Tscen, 10, "getline(): line = <%s>", firstpart(buf));
++		TRACE2(tet_Tscen, 10, "tgetline(): line = <%s>", firstpart(buf));
+ 		return(buf);
+ 	}
+ 
+@@ -1247,14 +1249,14 @@
+ 			}
+ 			else
+ 				TRACE2(tet_Tscen, 10,
+-					"getline(): encountered EOF on %s",
++					"tgetline(): encountered EOF on %s",
+ 					ifstp->if_fname);
+ 			if (ifstp->if_next) {
+ 				(void) fclose(ifstp->if_fp);
+ 				ifsfree(ifspop());
+ 				continue;
+ 			}
+-			TRACE1(tet_Tscen, 10, "getline(): return EOF");
++			TRACE1(tet_Tscen, 10, "tgetline(): return EOF");
+ 			return((char *) 0);
+ 		}
+ 
+@@ -1289,7 +1291,7 @@
+ 
+ 		/* if there is anything left, return it */
+ 		if (p >= buf) {
+-			TRACE4(tet_Tscen, 10, "getline(): fname = %s, lineno = %s, line = <%s>",
++			TRACE4(tet_Tscen, 10, "tgetline(): fname = %s, lineno = %s, line = <%s>",
+ 				ifstp->if_fname, tet_i2a(ifstp->if_lcount),
+ 				firstpart(buf));
+ 			return(buf);
+@@ -1298,7 +1300,7 @@
+ }
+ 
+ /*
+-**	ungetline() - store a line for subsequent retrieval by getline()
++**	ungetline() - store a line for subsequent retrieval by tgetline()
+ */
+ 
+ static void ungetline(line)
+

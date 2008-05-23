@@ -17,6 +17,7 @@ Source0: tet%{version}-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
 Patch0: tet%{version}-lite-lsb.patch
+Patch1: tet%{version}-lite-getline.patch
 License: Artistic
 Group: Development/Tools
 Buildroot: %{_builddir}/%{name}-root
@@ -74,7 +75,8 @@ if [ ! -x /opt/lsb/bin/lsbc++ ] ; then
 fi
 
 %setup -cn tet3-lite-3.7 -q -a1
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 if [ -n "$XLSBCC" ];then
     sed -i "s|/opt/lsb/bin/lsbcc|$XLSBCC|g" contrib/python_api/Makefile

@@ -6,6 +6,7 @@ Release: 1
 Source0: tet3.7-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Patch0: tet3.7-lite.patch
+Patch1: tet3.7-lite-getline.patch
 License: Artistic
 Group: Development/Tools
 Buildroot: %{_builddir}/%{name}-root
@@ -20,7 +21,8 @@ developing and running test cases.
 %prep
 
 %setup  -cn tet3-lite-3.7 -q -a1
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 
 %build
