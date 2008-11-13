@@ -167,6 +167,7 @@ chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-t
 %defattr(-,bin,bin)
 
 %dir /opt/lsb-tet3-lite/bin
+/opt/lsb-tet3-lite/bin/*
 %dir /opt/lsb-tet3-lite/lib
 /opt/lsb-tet3-lite/lib/ksh/tcm.ksh
 /opt/lsb-tet3-lite/lib/ksh/tetapi.ksh
@@ -207,6 +208,7 @@ framework for developing and running test cases.
 %defattr(-,bin,bin)
 
 %dir /opt/lsb-tet3-lite/inc
+/opt/lsb-tet3-lite/inc/*
 /opt/lsb-tet3-lite/lib/tet3/libapi.a
 /opt/lsb-tet3-lite/lib/tet3/libthrapi.a
 /opt/lsb-tet3-lite/lib/tet3/tcm.o
