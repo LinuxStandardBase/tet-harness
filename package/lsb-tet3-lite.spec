@@ -169,6 +169,13 @@ chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-t
 %dir /opt/lsb-tet3-lite/bin
 /opt/lsb-tet3-lite/bin/*
 %dir /opt/lsb-tet3-lite/lib
+%dir /opt/lsb-tet3-lite/lib/ksh
+%dir /opt/lsb-tet3-lite/lib/perl
+%dir /opt/lsb-tet3-lite/lib/python
+%dir /opt/lsb-tet3-lite/lib/posix_sh
+%dir /opt/lsb-tet3-lite/lib/tet3
+%dir /opt/lsb-tet3-lite/lib/xpg3sh
+%dir /opt/lsb-tet3-lite/lib/grw
 /opt/lsb-tet3-lite/lib/ksh/tcm.ksh
 /opt/lsb-tet3-lite/lib/ksh/tetapi.ksh
 /opt/lsb-tet3-lite/lib/perl/api.pl
