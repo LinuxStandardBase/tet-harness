@@ -1,15 +1,15 @@
 # LSB Compliant packages require the following in ~/.rpmmacros
 #%_binary_payload	w9.gzdio
 
-# upstream version, LSB specification version, LSB release version
+# upstream version
 %define version 3.7
-%define LSBSpec 3.1
 
 Summary: Test Environment Toolkit
 Name: lsb-tet3-lite
 Vendor: The Open Group
 URL: http://tetworks.opengroup.org/tet
 Version: %{version}
+# LSB release version
 # rel is passed in from Makefile so we only have to set the buildno one place
 # LSBRelease is also only in the Makfile now (sb)
 Release: %{rel}.lsb%{LSBRelease}
@@ -25,28 +25,11 @@ AutoReqProv: no
 
 
 # comment this out, since it often means that the
-# package cannot be installed , the value 3.0 is for LSB 3.0
-%ifarch i386 i486 i585 i686 athlon
-PreReq: lsb-core-ia32 >= 3.0
-%endif
-%ifarch ia64
-PreReq: lsb-core-ia64 >= 3.0
-%endif
-%ifarch ppc
-PreReq: lsb-core-ppc32 >= 3.0
-%endif
-%ifarch ppc64
-PreReq: lsb-core-ppc64 >= 3.0
-%endif
-%ifarch s390
-PreReq: lsb-core-s390 >= 3.0
-%endif
-%ifarch s390x
-PreReq: lsb-core-s390x >= 3.0
-%endif
-%ifarch x86_64
-PreReq: lsb-core-amd64 >= 3.0
-%endif
+# package cannot be installed , the value 3.1 is for LSB 3.1
+# note LSB 3.0 used the older lsb-core-{arch} which not
+# everyone provides in a way we can version-compare on, 
+# so baseline at LSB 3.1
+PreReq: lsb >= 3.1
 
 %description
 This is an LSB conforming package of the Test Environment Toolkit.
