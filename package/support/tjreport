@@ -189,6 +189,7 @@ sub GatherStats($) {
     my ($errorMessage);
     my ($tmp);
     my ($lineno) = 0;
+    my ($intestcase);
     my ($intest);
     my ($inpurpose);
     my ($foundresult);
@@ -261,6 +262,9 @@ sub GatherStats($) {
 		$stats->{TOTAL_TESTS_EXPECTED} -= 1;
             }
         }
+        elsif ( $line[0] =~ /^15/ ) {
+            $intestcase = 1;
+        }
         elsif ( $line[0] =~ /^400/ ) {
             # start of a test
             $testNum      = $line[1];
@@ -319,12 +323,39 @@ sub GatherStats($) {
                 $stats->{TESTS}{$testName}{$testNum}{INFO} = $errorMessage;
             }
         }
+        elsif ( $line[0] =~ /^50/ ) {
+            # FIXME - code 50 is a tcc error - should we
+            # be handling these somehow too - same as 510?
+        }
+        elsif ( $line[0] =~ /^510/ ) {
+            # FIXME - we aren't completely sure this is right for
+            # every code 510 instance, it works for the situation from
+            # bug 2555 where the test manager just gives up the test
+            # case when the child process SIGSEGVs
+            # 
+            # test system errors - no test number, use "1"
+            # we want to capture an UNRESOLVED and the error
+            $line =~ /\|([^\|]*)$/;
+            $tmp = $1;
+            chomp($tmp);
+            $errorMessage .= "$tmp\n";
+            if ($intestcase) {
+                $anomalies{$lineno}{notest} = $testName;
+                $stats->{STATE_SUMMARY}{TEST_ERROR} += 1;
+            }
+            $stats->{TOTAL_TESTS_FAILED}++;
+            $stats->{TESTS}{$testName}{1}{STATE} = "UNRESOLVED";
+            $stats->{TESTS}{$testName}{1}{INFO} = $errorMessage;
+        }
         elsif ( $line[0] =~ /^520/ ) {
             # test info/errors
             $line =~ /\|([^\|]*)$/;
             $tmp = $1;
             chomp($tmp);
             $errorMessage .= "$tmp\n";
+        }
+        elsif ( $line[0] =~ /^80/ ) {
+            $intestcase = 0;
         }
     }
 
@@ -519,6 +550,7 @@ sub PrintSummary($$$) {
         foreach my $key (sort {$a <=> $b} keys %anomalies) {
             printf("Line #: %5d - No End after Start for %s\n", $key, $anomalies{$key}{noend}) if $anomalies{$key}{noend};
             printf("Line #: %5d - Missing result for %s\n", $key, $anomalies{$key}{noresult})  if $anomalies{$key}{noresult};
+            printf("Line #: %5d - Abandoned test for %s\n", $key, $anomalies{$key}{notest})  if $anomalies{$key}{notest};
         }
     } 
 }
