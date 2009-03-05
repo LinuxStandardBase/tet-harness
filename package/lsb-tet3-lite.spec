@@ -145,6 +145,9 @@ cp support/tjreport.1 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/
 chmod 755 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man3 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man4
 chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man3/* $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man4/*
 
+# bug 2509 - unpackaged .pyc, .pyo files
+find $RPM_BUILD_ROOT/opt/lsb-tet3-lite -name '*.pyc' | xargs rm -f
+find $RPM_BUILD_ROOT/opt/lsb-tet3-lite -name '*.pyo' | xargs rm -f
 
 %files
 %defattr(-,bin,bin)
