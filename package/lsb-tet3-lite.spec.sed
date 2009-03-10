@@ -4,6 +4,10 @@
 # upstream version
 %define version 3.7
 
+# defined in the Makefile
+%define rel @RELEASE@
+%define LSBRelease @LSBRelease@
+
 Summary: Test Environment Toolkit
 Name: lsb-tet3-lite
 Vendor: The Open Group

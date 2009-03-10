@@ -22,7 +22,7 @@ PACKAGE=tet3-lite
 LSB_PACKAGE=lsb-tet3-lite
 VERSION=3.7
 LSBRelease=4
-RELEASE=16
+RELEASE=17
 LSB_RELEASE=$(RELEASE).lsb$(LSBRelease)
 
 FULL_PACKAGE_NAME=$(PACKAGE)-$(VERSION)
@@ -81,6 +81,10 @@ else
 all: lsbtetpackage
 endif
 
+# Specfile generation rule
+%.spec : %.spec.sed
+	sed -e "s#@LSBRelease@#`echo $(LSBRelease)`#" -e "s#@RELEASE@#`echo $(RELEASE)`#" < $< > $@
+
 lsbtetpackage: $(LSB_TET_SOURCE_NAME) $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME)
                                                                                 
 $(LSB_TET_SOURCE_NAME) $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME):	$(UPSTREAMSOURCES) $(SUPPORT) $(PATCH1) $(LSB_PACKAGE).spec
@@ -88,7 +92,7 @@ $(LSB_TET_SOURCE_NAME) $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME):	$(UP
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/RPMS
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/SRPMS
 ifdef SIGN_PACKAGES
-	@expect -c 'set timeout -1' -c 'spawn $(RPM_BUILD_CMD) --sign --rcfile ${RCFILELIST} --define=_sourcedir\ $(PWD) --define=_topdir\ $(RPM_TMP_BUILD_DIR) --define=_target_cpu\ $(RPM_BUILD_ARCH) --define=_defaultdocdir\ $(LSB_TET_DOC_DIR) --define=LSBRelease\ $(LSBRelease) --define=rel\ $(RELEASE) -ba $(LSB_PACKAGE).spec' -c 'expect -ex "Enter pass phrase:"' -c 'send "\n"' -c 'expect "Executing(%clean)"' -c 'expect "exit 0"' -c 'send "\n"'
+	@expect -c 'set timeout -1' -c 'spawn $(RPM_BUILD_CMD) --sign --rcfile ${RCFILELIST} --define=_sourcedir\ $(PWD) --define=_topdir\ $(RPM_TMP_BUILD_DIR) --define=_target_cpu\ $(RPM_BUILD_ARCH) --define=_defaultdocdir\ $(LSB_TET_DOC_DIR) -ba $(LSB_PACKAGE).spec' -c 'expect -ex "Enter pass phrase:"' -c 'send "\n"' -c 'expect "Executing(%clean)"' -c 'expect "exit 0"' -c 'send "\n"'
 else
 	@$(RPM_BUILD_CMD) --rcfile ${RCFILELIST} --define="_sourcedir $(PWD)" --define="_topdir $(RPM_TMP_BUILD_DIR)" --define="_target_cpu $(RPM_BUILD_ARCH)" --define="_defaultdocdir $(LSB_TET_DOC_DIR)" --define="LSBRelease $(LSBRelease)" --define="rel $(RELEASE)" -ba $(LSB_PACKAGE).spec
 endif
@@ -137,4 +141,4 @@ ifndef BUILD_NO_DEB
 endif
 
 clean clobber:
-	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2) $(SOURCE3) *.rpm *.deb
+	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2) $(SOURCE3) *.rpm *.deb *.spec
