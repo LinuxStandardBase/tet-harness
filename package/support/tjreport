@@ -151,7 +151,7 @@ my (%ArchMap) = (
 );
 
 my ($VerboseSummary) = 0;
-my ($NoNetWaiver) = 0;
+my ($NoNetWaiver) = 1;
 my ($NoCachedWaiver) = 0;
 my ($ShowFIP) = 0;
 my (%anomalies) = ();
@@ -848,7 +848,7 @@ if ( exists( $options{'l'} ) ) {
 }
 
 if ( exists( $options{'n'} ) ) {
-    $NoNetWaiver = 1;
+    $NoNetWaiver = 0;
 }
 
 if ( exists( $options{'v'} ) ) {
