@@ -740,7 +740,7 @@ sub LoadNetWaiverFile($) {
         print "Networked waiver retrieval disabled...\n";
     } else {
         print "Checking networked waivers information -- file: $waiversite/$filename\n";
-        $ret = system "LC_ALL=C wget -N -o $waiverdir/wget.log -P $waiverdir $waiversite/$filename";
+        $ret = system "LC_ALL=C wget -t 1 -T 15 -N -o $waiverdir/wget.log -P $waiverdir $waiversite/$filename";
         if ( $ret != 0 ) {
                 print "Warning, wget was unable to locate network waivers to retrieve..\n";
             return;
