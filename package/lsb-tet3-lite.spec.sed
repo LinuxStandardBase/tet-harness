@@ -104,6 +104,7 @@ fi
 
 # now build the main bits
 export TET_ROOT=`pwd`
+export LSBCC_BESTEFFORT=1
 
 sh ./configure -t lite
 cd src && make && make install
