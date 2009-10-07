@@ -26,7 +26,7 @@ License: Artistic
 Group: Development/Tools
 Buildroot: %{_builddir}/%{name}-root
 AutoReqProv: no
-
+BuildRequires: lsb-python lsb-build-cc lsb-build-c++
 
 # comment this out, since it often means that the
 # package cannot be installed , the value 3.1 is for LSB 3.1
@@ -83,7 +83,7 @@ fi
 unset PYTHONPATH
 
 # use python itself to compute location of lib, header
-python 2>&1 > .PYTHONINFO <<END
+/opt/lsb/appbat/bin/python 2>&1 > .PYTHONINFO <<END
 import sys
 print "PYTHONLIB="+sys.path[2]
 print "PYTHONINCLUDE="+sys.prefix+'/include/'+sys.path[2].split('/')[-1]
@@ -246,6 +246,9 @@ fi
 %post
 
 %changelog
+* Wed Oct 07 2009 Stew Benedict <stewb@linux-foundation.org>
+- need to build pytet with lsb-python to remain compatible with tests
+
 * Mon Feb 18 2008 Stew Benedict <stewb@linux-foundation.org>
 - move the %%post message to README.%{name} (bug 1940)
 
