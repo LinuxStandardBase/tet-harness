@@ -2,7 +2,7 @@
 Summary: Test Environment Toolkit
 Name: tet3-lite
 Version: 3.7
-Release: 1
+Release: @RELEASE@
 Source0: tet3.7-unsup.src.tgz
 Source1: tet3-lite-manpages-v1.1.tgz
 Patch0: tet3.7-lite.patch
