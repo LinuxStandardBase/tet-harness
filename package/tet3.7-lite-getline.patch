@@ -1,4 +1,4 @@
-=== modified file tet3-lite-3.7/src/tet3/tcc/scen1.c'
+=== modified file tet3-lite-3.7/src/tet3/tcc/scen1.c
 --- tet3-lite-3.7/src/tet3/tcc/scen1.c	2008-05-23 13:57:08 +0000
 +++ tet3-lite-3.7/src/tet3/tcc/scen1.c	2008-05-23 13:59:31 +0000
 @@ -98,7 +98,7 @@
