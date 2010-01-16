@@ -44,7 +44,10 @@ PATCH1	=	tet3.7-lite-lsb.patch
 SUPPORT =	support.tgz
 SOURCE3 =	$(SUPPORT)
 UPSTREAMSOURCES = $(SOURCE1) $(SOURCE2)
-TETURL	=	http://www.opengroup.org/infosrv/TET/TET3/
+# Upstream URL
+#TETURL	=	http://tetworks.opengroup.org/tet
+# Backup to upstream; needed now because the man pages are missing.
+TETURL  =	http://ftp.linuxfoundation.org/pub/lsb/impl/packages
 
 # this patch for building regular nonlsb tet packages
 TPATCH1	=	tet3.7-lite.patch
