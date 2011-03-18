@@ -52,6 +52,9 @@ TETURL  =	http://ftp.linuxfoundation.org/pub/lsb/impl/packages
 # this patch for building regular nonlsb tet packages
 TPATCH1	=	tet3.7-lite.patch
 
+# for pkgchk
+DEPS=-d lsb-tet3-lite
+
 PWD=$(shell pwd)
 
 # Determine whether to use rpm or rpmbuild to build the packages
@@ -143,5 +146,9 @@ ifndef BUILD_NO_DEB
 	@ls *.deb
 endif
 
+pkgchk: $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME)
+	/opt/lsb/bin/lsbpkgchk -L lsb-tet3-lite -t $(LSB_TET_BINARY_NAME)
+	/opt/lsb/bin/lsbpkgchk -L lsb-tet3-lite $(DEPS) -t $(LSB_TET_DEVEL_BINARY_NAME)
+
 clean clobber:
-	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2) $(SOURCE3) *.rpm *.deb *.spec
+	rm -f $(RPM_SOURCE_DIR)/$(SOURCE1) $(RPM_SOURCE_DIR)/$(SOURCE2) $(RPM_SOURCE_DIR)/$(PATCH1) $(RPM_SOURCE_DIR)/$(TPATCH1) $(SOURCE1) $(SOURCE2) $(SOURCE3) *.rpm *.deb *.spec journal.*
