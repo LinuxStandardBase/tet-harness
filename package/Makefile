@@ -69,6 +69,7 @@ endif
 # The rpmrc file translates targets where there are multiple choices per
 # architecture. On build, the derived RPM_BUILD_ARCH is given as the target
 RCFILELIST="/usr/lib/rpm/rpmrc:./rpmrc"
+MACROFILELIST="/usr/lib/rpm/macros:/etc/rpm:~/.rpmmacros:./rpmmacros"
 RPM_TMP_BUILD_DIR=$(HOME)/tmp/rpm-build
 RPM_BUILD_ARCH=$(shell rpm --rcfile ${RCFILELIST} --eval=%{_target_cpu})
 RPM_BINARY_DIR=$(RPM_TMP_BUILD_DIR)/RPMS/$(RPM_BUILD_ARCH)
@@ -98,9 +99,9 @@ $(LSB_TET_SOURCE_NAME) $(LSB_TET_BINARY_NAME) $(LSB_TET_DEVEL_BINARY_NAME):	$(UP
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/RPMS
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/SRPMS
 ifdef SIGN_PACKAGES
-	@expect -c 'set timeout -1' -c 'spawn $(RPM_BUILD_CMD) --sign --rcfile ${RCFILELIST} --define=_sourcedir\ $(PWD) --define=_topdir\ $(RPM_TMP_BUILD_DIR) --define=_target_cpu\ $(RPM_BUILD_ARCH) --define=_defaultdocdir\ $(LSB_TET_DOC_DIR) -ba $(LSB_PACKAGE).spec' -c 'expect -ex "Enter pass phrase:"' -c 'send "\n"' -c 'expect "Executing(%clean)"' -c 'expect "exit 0"' -c 'send "\n"'
+	@expect -c 'set timeout -1' -c 'spawn $(RPM_BUILD_CMD) --sign --rcfile ${RCFILELIST} --macros=$(MACROFILELIST) --define=_sourcedir\ $(PWD) --define=_topdir\ $(RPM_TMP_BUILD_DIR) --define=_target_cpu\ $(RPM_BUILD_ARCH) --define=_defaultdocdir\ $(LSB_TET_DOC_DIR) -ba $(LSB_PACKAGE).spec' -c 'expect -ex "Enter pass phrase:"' -c 'send "\n"' -c 'expect "Executing(%clean)"' -c 'expect "exit 0"' -c 'send "\n"'
 else
-	@$(RPM_BUILD_CMD) --rcfile ${RCFILELIST} --define="_sourcedir $(PWD)" --define="_topdir $(RPM_TMP_BUILD_DIR)" --define="_target_cpu $(RPM_BUILD_ARCH)" --define="_defaultdocdir $(LSB_TET_DOC_DIR)" --define="LSBRelease $(LSBRelease)" --define="rel $(RELEASE)" -ba $(LSB_PACKAGE).spec
+	@$(RPM_BUILD_CMD) --rcfile ${RCFILELIST} --macros=$(MACROFILELIST) --define="_sourcedir $(PWD)" --define="_topdir $(RPM_TMP_BUILD_DIR)" --define="_target_cpu $(RPM_BUILD_ARCH)" --define="_defaultdocdir $(LSB_TET_DOC_DIR)" --define="LSBRelease $(LSBRelease)" --define="rel $(RELEASE)" -ba $(LSB_PACKAGE).spec
 endif
 	@mv $(RPM_SRPM_DIR)/$(LSB_TET_SOURCE_NAME) .
 	@mv $(RPM_BINARY_DIR)/$(LSB_TET_BINARY_NAME) .
@@ -129,7 +130,7 @@ $(TET_SOURCE_NAME) $(TET_BINARY_NAME) $(TET_DEVEL_BINARY_NAME):	$(UPSTREAMSOURCE
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/RPMS
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/SRPMS
 
-	@$(RPM_BUILD_CMD) --rcfile ${RCFILELIST} --define="_sourcedir $(PWD)" --define="_topdir $(RPM_TMP_BUILD_DIR)" --define="_target_cpu $(RPM_BUILD_ARCH)" --define="_defaultdocdir $(LSB_TET_DOC_DIR)" -ba $(PACKAGE).spec
+	@$(RPM_BUILD_CMD) --rcfile ${RCFILELIST} --macros=$(MACROFILELIST) --define="_sourcedir $(PWD)" --define="_topdir $(RPM_TMP_BUILD_DIR)" --define="_target_cpu $(RPM_BUILD_ARCH)" --define="_defaultdocdir $(LSB_TET_DOC_DIR)" -ba $(PACKAGE).spec
 
 	@mv $(RPM_SRPM_DIR)/$(TET_SOURCE_NAME) .
 	@mv $(RPM_BINARY_DIR)/$(TET_BINARY_NAME) .
