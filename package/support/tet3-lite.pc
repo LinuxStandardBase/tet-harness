@@ -1,0 +1,10 @@
+prefix=/opt
+exec_prefix=${prefix}
+libdir=/opt/lsb-tet3-lite/lib/tet3/
+includedir=/opt/lsb-tet3-lite/inc/
+
+Name: TET3-Lite
+Description: TET development environment
+Version: 3.7
+Libs: -L${libdir}
+Cflags: -I${includedir}

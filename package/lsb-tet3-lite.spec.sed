@@ -147,6 +147,9 @@ tar zxvf $RPM_SOURCE_DIR/support.tgz
 install -m 555 support/tjreport $RPM_BUILD_ROOT/opt/lsb-tet3-lite/bin/tjreport
 cp support/tjreport.1 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/
  
+mkdir -p $RPM_BUILD_ROOT/opt/lsb-tet3-lite/lib/pkgconfig
+install -m 644 support/tet3-lite.pc $RPM_BUILD_ROOT/opt/lsb-tet3-lite/lib/pkgconfig
+
 chmod 755 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man3 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man4
 chmod 644 $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man1/* $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man3/* $RPM_BUILD_ROOT/opt/lsb-tet3-lite/man/man4/*
 
@@ -207,6 +210,8 @@ framework for developing and running test cases.
 
 %dir /opt/lsb-tet3-lite/inc
 /opt/lsb-tet3-lite/inc/*
+%dir /opt/lsb-tet3-lite/lib/pkgconfig
+/opt/lsb-tet3-lite/lib/pkgconfig/tet3-lite.pc
 /opt/lsb-tet3-lite/lib/tet3/libapi.a
 /opt/lsb-tet3-lite/lib/tet3/libthrapi.a
 /opt/lsb-tet3-lite/lib/tet3/tcm.o
@@ -246,6 +251,9 @@ fi
 %post
 
 %changelog
+* Thu May 05 2011 Stew Benedict <stewb@linux-foundation.org>
+- add a pkgconfig file (bug 1731)
+
 * Wed Oct 07 2009 Stew Benedict <stewb@linux-foundation.org>
 - need to build pytet with lsb-python to remain compatible with tests
 

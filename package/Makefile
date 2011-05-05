@@ -22,7 +22,7 @@ PACKAGE=tet3-lite
 LSB_PACKAGE=lsb-tet3-lite
 VERSION=3.7
 LSBRelease=4
-RELEASE=21
+RELEASE=22
 LSB_RELEASE=$(RELEASE).lsb$(LSBRelease)
 
 FULL_PACKAGE_NAME=$(PACKAGE)-$(VERSION)
@@ -119,7 +119,7 @@ $(UPSTREAMSOURCES):
                 chmod 644 $$i;                            \
         done;           
 
-$(SUPPORT): support/tjreport support/tjreport.1
+$(SUPPORT): support/tjreport support/tjreport.1 support/tet3-lite.pc
 	tar zcvf $(SUPPORT) support
 
 # tetpackages are built using the regular gcc
