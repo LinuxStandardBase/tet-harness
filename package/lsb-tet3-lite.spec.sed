@@ -62,6 +62,9 @@ if [ ! -x /opt/lsb/bin/lsbc++ ] ; then
 fi
 
 %setup -cn tet3-lite-3.7 -q -a1
+# We need this because some of the permissions in the tarball are
+# read-only for files we need to patch
+chmod -R u+w *
 %patch0 -p1
 %patch1 -p1
 
