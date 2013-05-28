@@ -1,0 +1,52 @@
+diff -ru tet-orig/src/tet3/tcm/ictp.c tet/src/tet3/tcm/ictp.c
+--- tet-orig/src/tet3/tcm/ictp.c	2006-03-10 04:42:22.000000000 -0500
++++ tet/src/tet3/tcm/ictp.c	2013-05-28 12:04:53.110392648 -0400
+@@ -405,10 +405,24 @@
+ #endif
+ {
+ 	char buf[128];
++	int low_fds[3] = { -1, -1, -1 };
++	int low_fd;
+ 
+ 	(void) sprintf(buf, "%d %s", testnum, curtime());
+ 	lite_output(TET_JNL_TP_START, buf, "TP Start");
+ 
++	/* avoid stdin/stdout/stderr if available for the temp file */
++	low_fd = open("/dev/null", O_WRONLY);
++	while ((low_fd >= 0) && (low_fd <= 2)) {
++		low_fds[low_fd] = 1;
++		low_fd = dup(low_fd);
++	}
++
++	if (low_fd < 0)
++		tet_error(errno, "cannot reserve low file descriptors");
++	else
++		close(low_fd);
++
+ 	/* create temporary result file */
+ 	(void) remove(tet_tmpresfile);
+ 	if ((tet_tmpresfp = fopen(tet_tmpresfile, "a+b")) == (FILE *) 0)
+@@ -425,6 +439,11 @@
+ 	ASSERT(tmpresenv);
+ 	if (tet_putenv(tmpresenv) != 0)
+ 		tet_error(0, "tet_putenv() failed setting TET_TMPRESFILE");
++
++	/* close low fds we held open from before */
++	for (low_fd = 0; low_fd < 3; low_fd++)
++		if (low_fds[low_fd] > 0)
++			close(low_fd);
+ }
+ 
+ #else		/* -START-LITE-CUT- */
+Only in tet/src/tet3/tcm: ictp.c.orig
+diff -ru tet-orig/src/tet3/tcm/tcmhdrs.h tet/src/tet3/tcm/tcmhdrs.h
+--- tet-orig/src/tet3/tcm/tcmhdrs.h	2006-03-10 04:42:22.000000000 -0500
++++ tet/src/tet3/tcm/tcmhdrs.h	2013-05-28 12:04:53.111392653 -0400
+@@ -66,6 +66,7 @@
+ #  include <errno.h>
+ #  include <sys/types.h>
+ #  include <sys/stat.h>
++#  include <fcntl.h>
+ #  include <limits.h>
+ #  include <time.h>
+ #    include <signal.h>

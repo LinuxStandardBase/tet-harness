@@ -22,6 +22,7 @@ Source1: tet3-lite-manpages-v1.1.tgz
 Source2: support.tgz
 Patch0: tet%{version}-lite-lsb.patch
 Patch1: tet%{version}-lite-getline.patch
+Patch2: tet%{version}-lite-tmpresfp.patch
 License: Artistic
 Group: Development/Tools
 Buildroot: %{_builddir}/%{name}-root
@@ -67,6 +68,7 @@ fi
 chmod -R u+w *
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 if [ -n "$XLSBCC" ];then
     sed -i "s|/opt/lsb/bin/lsbcc|$XLSBCC|g" contrib/python_api/Makefile
