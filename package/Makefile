@@ -25,20 +25,6 @@ LSBRelease=4
 RELEASE=25
 LSB_RELEASE=$(RELEASE).lsb$(LSBRelease)
 
-#
-# Derive date string for daily snapshots
-ISO_DATE=$(shell date +"%Y%m%d")
-
-# Handle different version generation for snapshots than for official builds
-# OFFICIAL_RELEASE should be set to the tag to extract from CVS
-ifdef OFFICIAL_RELEASE
-# EXPORT_TAG should be set to the bzr revisionspec to use
-EXPORT_TAG=--revision=$(OFFICIAL_RELEASE)
-else
-LSB_RELEASE=$(RELEASE).$(ISO_DATE).lsb$(LSBRelease)
-EXPORT_TAG=
-endif
-
 FULL_PACKAGE_NAME=$(PACKAGE)-$(VERSION)
 LSB_FULL_PACKAGE_NAME=$(LSB_PACKAGE)-$(VERSION)
 
