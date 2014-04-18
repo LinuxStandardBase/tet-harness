@@ -22,7 +22,22 @@ PACKAGE=tet3-lite
 LSB_PACKAGE=lsb-tet3-lite
 VERSION=3.7
 LSBRelease=4
-RELEASE=25
+BUILDNO=26
+
+#
+# Derive date string for daily snapshots
+ISO_DATE=$(shell date +"%Y%m%d")
+
+# Handle different version generation for snapshots than for official builds
+# OFFICIAL_RELEASE should be set to the tag to extract from CVS
+ifdef OFFICIAL_RELEASE
+# EXPORT_TAG should be set to the bzr revisionspec to use
+RELEASE=$(BUILDNO)
+EXPORT_TAG=--revision=$(OFFICIAL_RELEASE)
+else
+RELEASE=0.$(ISO_DATE).$(BUILDNO)
+EXPORT_TAG=
+endif
 LSB_RELEASE=$(RELEASE).lsb$(LSBRelease)
 
 FULL_PACKAGE_NAME=$(PACKAGE)-$(VERSION)
