@@ -21,8 +21,8 @@
 PACKAGE=tet3-lite
 LSB_PACKAGE=lsb-tet3-lite
 VERSION=3.7
-LSBRelease=4
-BUILDNO=26
+LSBRelease=5
+BUILDNO=27
 
 #
 # Derive date string for daily snapshots
